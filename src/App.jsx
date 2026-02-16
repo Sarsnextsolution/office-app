@@ -127,16 +127,46 @@ useEffect(() => {
   };
   // Submit attendance report (Employee)
 const submitReport = async () => {
-  const { error } = await supabase.from("attendance").insert([
-    {
-      employee_id: session.user.id,
-      work_date: new Date(),
-      calls,
-      leads,
-      revenue,
+  if (!session) return;
+
+  const today = new Date().toLocaleDateString("en-CA");
+
+  // First get employee id from employees table
+  const { data: emp } = await supabase
+    .from("employees")
+    .select("id")
+    .eq("auth_id", session.user.id)
+    .single();
+
+  if (!emp) {
+    alert("Employee not found");
+    return;
+  }
+
+  // Update existing attendance row instead of inserting new one
+  const { error } = await supabase
+    .from("attendance")
+    .update({
+      calls: Number(calls),
+      leads: Number(leads),
+      revenue: Number(revenue),
       work_note: workNote,
-    },
-  ]);
+    })
+    .eq("employee_id", emp.id)
+    .eq("work_date", today);
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Report Submitted Successfully");
+    setCalls("");
+    setLeads("");
+    setRevenue("");
+    setWorkNote("");
+    fetchReports(); // refresh director dashboard
+  }
+};
+
 
   if (error) {
     alert(error.message);
@@ -321,35 +351,43 @@ return (
       <button onClick={handleLogout}>Logout</button>
     </div>
     {userRole === "director" && (
-  <div className="dashboard-grid">
-    <div className="stat-card">
-      <h3>Total Employees</h3>
-      <h2>{employees.filter(emp => emp.role === "employee").length}</h2>
-    </div>
+  <>
+    <div style={{ 
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+      gap: "20px",
+      marginBottom: "30px"
+    }}>
 
-    <div className="stat-card">
-      <h3>Working Now</h3>
-      <h2>
-        {reports.filter(r => r.login_time && !r.logout_time).length}
-      </h2>
-    </div>
+      <div className="statCard">
+        <h3>Total Employees</h3>
+        <h1>{employees.length}</h1>
+      </div>
 
-    <div className="stat-card">
-      <h3>Completed Today</h3>
-      <h2>
-        {reports.filter(r => r.logout_time).length}
-      </h2>
-    </div>
+      <div className="statCard">
+        <h3>Working Now</h3>
+        <h1>
+          {reports.filter(r => r.login_time && !r.logout_time).length}
+        </h1>
+      </div>
 
-    <div className="stat-card">
-      <h3>Total Revenue Today</h3>
-      <h2>
-        ₹{reports.reduce((sum, r) => sum + (r.revenue || 0), 0)}
-      </h2>
+      <div className="statCard">
+        <h3>Completed Today</h3>
+        <h1>
+          {reports.filter(r => r.logout_time).length}
+        </h1>
+      </div>
+
+      <div className="statCard">
+        <h3>Total Revenue Today</h3>
+        <h1>
+          ₹{reports.reduce((sum, r) => sum + (r.revenue || 0), 0)}
+        </h1>
+      </div>
+
     </div>
-  </div>
+  </>
 )}
-
 {userRole === "employee" && (
   <div className="card">
     <h2>Today's Attendance</h2>

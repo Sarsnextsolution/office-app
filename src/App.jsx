@@ -117,7 +117,10 @@ useEffect(() => {
     alert(signUpError.message);
     return;
   }
-
+if (!authData?.user) {
+  alert("User creation failed");
+  return;
+}
   // 2️⃣ Save employee details with auth_id
   const { error } = await supabase.from("employees").insert([
     {
@@ -144,7 +147,10 @@ useEffect(() => {
 const submitReport = async () => {
   if (!session) return;
 
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = new Date(
+  new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+).toISOString().split("T")[0];
+
 
   // First get employee id from employees table
   const { data: emp } = await supabase
@@ -184,7 +190,10 @@ const submitReport = async () => {
 const [reports, setReports] = useState([]);
 
 const fetchReports = async () => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date(
+  new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+).toISOString().split("T")[0];
+
 
   const { data, error } = await supabase
     .from("attendance")
@@ -209,7 +218,10 @@ const fetchReports = async () => {
 const markLogin = async () => {
   if (!session) return;
 
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = new Date(
+  new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+).toISOString().split("T")[0];
+
 
   const { data: emp } = await supabase
     .from("employees")
@@ -271,7 +283,10 @@ const markLogout = async () => {
 const checkTodayAttendance = async () => {
   if (!session) return;
 
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = new Date(
+  new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+).toISOString().split("T")[0];
+
 
   const { data: emp } = await supabase
     .from("employees")

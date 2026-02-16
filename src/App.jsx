@@ -181,18 +181,6 @@ const submitReport = async () => {
     fetchReports(); // refresh director dashboard
   }
 };
-
-
-  if (error) {
-    alert(error.message);
-  } else {
-    alert("Report Submitted Successfully");
-    setCalls("");
-    setLeads("");
-    setRevenue("");
-    setWorkNote("");
-  }
-};
 const [reports, setReports] = useState([]);
 
 const fetchReports = async () => {
@@ -201,16 +189,17 @@ const fetchReports = async () => {
   const { data, error } = await supabase
     .from("attendance")
     .select(`
-      id,
-      work_date,
-      login_time,
-      logout_time,
-      calls,
-      leads,
-      revenue,
-      work_note,
-      employees ( name )
-    `)
+  id,
+  work_date,
+  login_time,
+  logout_time,
+  calls,
+  leads,
+  revenue,
+  work_note,
+  employees ( name )
+`)
+
     .eq("work_date", today);
 
   if (!error) setReports(data);
@@ -590,5 +579,5 @@ return (
   </div>
 );
 
-
+}
 export default App;

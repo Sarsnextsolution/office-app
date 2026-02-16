@@ -106,25 +106,40 @@ useEffect(() => {
 
   // Add employee
   const addEmployee = async () => {
-    const { error } = await supabase.from("employees").insert([
-      {
-        name,
-        email,
-        salary,
-        role: role
-      },
-    ]);
 
-    if (error) {
-      alert("Error: " + error.message);
-    } else {
-      alert("Employee Added");
-      setName("");
-      setEmail("");
-      setSalary("");
-      fetchEmployees();
+  // 1️⃣ Create login account
+  const { data, error: signUpError } = await supabase.auth.signUp({
+    email: email,
+    password: "Temp@12345"
+  });
+
+  if (signUpError) {
+    alert(signUpError.message);
+    return;
+  }
+
+  // 2️⃣ Save employee details with auth_id
+  const { error } = await supabase.from("employees").insert([
+    {
+      name: name,
+      email: email,
+      salary: salary,
+      role: role,
+      auth_id: data.user.id
     }
-  };
+  ]);
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Employee Added Successfully");
+    setName("");
+    setEmail("");
+    setSalary("");
+    fetchEmployees();
+  }
+};
+
   // Submit attendance report (Employee)
 const submitReport = async () => {
   if (!session) return;
@@ -574,6 +589,6 @@ return (
 
   </div>
 );
-}
+
 
 export default App;

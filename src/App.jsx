@@ -496,12 +496,24 @@ return (
         <td>{rep.employees?.name}</td>
         <td>
           {rep.login_time
-            ? new Date(rep.login_time).toLocaleTimeString()
+            ? new Date(rep.login_time).toLocaleString("en-IN", {
+  timeZone: "Asia/Kolkata",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+})
+
             : "-"}
         </td>
         <td>
           {rep.logout_time
-            ? new Date(rep.logout_time).toLocaleTimeString()
+            ? new Date(rep.logout_time).toLocaleString("en-IN", {
+  timeZone: "Asia/Kolkata",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+})
+
             : "-"}
         </td>
         <td>
@@ -580,4 +592,5 @@ return (
 );
 
 }
+
 export default App;

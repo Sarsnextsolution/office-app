@@ -305,6 +305,17 @@ const checkTodayAttendance = async () => {
 
   setTodayAttendance(data);
 };
+const formatTime = (time) => {
+  if (!time) return "-";
+
+  return new Date(time).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+};
 
   //---------Login Page----------//
  if (!session) {
@@ -520,17 +531,9 @@ return (
 
             : "-"}
         </td>
-        <td>
-          {rep.logout_time
-            ? new Date(rep.logout_time).toLocaleString("en-IN", {
-  timeZone: "Asia/Kolkata",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-})
+       <td>{formatTime(rep.login_time)}</td>
+<td>{formatTime(rep.logout_time)}</td>
 
-            : "-"}
-        </td>
         <td>
           {!rep.login_time
             ? "🔴 Not Logged In"

@@ -14,6 +14,10 @@ function App() {
 const [leads, setLeads] = useState("");
 const [revenue, setRevenue] = useState("");
 const [todayAttendance, setTodayAttendance] = useState(null);
+const [reports, setReports] = useState([]);
+const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
 
 const [workNote, setWorkNote] = useState("");
@@ -55,7 +59,7 @@ useEffect(() => {
     fetchEmployees();
      fetchReports(); 
   }
-}, [session, userRole]);
+}, [session, userRole, selectedDate]);
 
 
   const fetchEmployees = async () => {
@@ -117,7 +121,7 @@ useEffect(() => {
     alert(signUpError.message);
     return;
   }
-if (!authData?.user) {
+if (!data?.user) {
   alert("User creation failed");
   return;
 }
@@ -187,12 +191,10 @@ const submitReport = async () => {
     fetchReports(); // refresh director dashboard
   }
 };
-const [reports, setReports] = useState([]);
+
 
 const fetchReports = async () => {
-  const today = new Date(
-  new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
-).toISOString().split("T")[0];
+
 
 
   const { data, error } = await supabase
@@ -209,7 +211,8 @@ const fetchReports = async () => {
   employees ( name )
 `)
 
-    .eq("work_date", today);
+    .eq("work_date", selectedDate);
+
 
   if (!error) setReports(data);
 };
@@ -242,7 +245,7 @@ const markLogin = async () => {
 
   if (existing) {
     alert("Already logged in today");
-    setTodayRecord(existing);   // 👈 THIS LINE IMPORTANT
+    setTodayAttendance(existing);// 👈 THIS LINE IMPORTANT
     return;
   }
 
@@ -518,46 +521,52 @@ return (
     <button onClick={submitReport}>Submit Report</button>
   </div>
 )}
-<h2>Today's Attendance Status</h2>
+{userRole === "director" && (
+  <div className="card">
+    <h2>Attendance History</h2>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Login Time</th>
-      <th>Logout Time</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    {reports.map((rep) => (
-      <tr key={rep.id}>
-        <td>{rep.employees?.name}</td>
-        <td>
-          {rep.login_time
-            ? new Date(rep.login_time).toLocaleString("en-IN", {
-  timeZone: "Asia/Kolkata",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-})
+    <div style={{ marginBottom: "15px" }}>
+      <label style={{ marginRight: "10px", fontWeight: "bold" }}>
+        Select Date:
+      </label>
 
-            : "-"}
-        </td>
+      <input
+        type="date"
+        value={selectedDate}
+        onChange={(e) => setSelectedDate(e.target.value)}
+      />
+    </div>
 
-<td>{formatTime(rep.logout_time)}</td>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Login Time</th>
+          <th>Logout Time</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {reports.map((rep) => (
+          <tr key={rep.id}>
+            <td>{rep.employees?.name}</td>
+            <td>{formatTime(rep.login_time)}</td>
+            <td>{formatTime(rep.logout_time)}</td>
+            <td>
+              {!rep.login_time
+                ? "🔴 Not Logged In"
+                : !rep.logout_time
+                ? "🟢 Working"
+                : "🔵 Completed"}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
 
-        <td>
-          {!rep.login_time
-            ? "🔴 Not Logged In"
-            : !rep.logout_time
-            ? "🟢 Working"
-            : "🔵 Completed"}
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+  </div>
+)}
+
 
 {userRole === "director" && (
   <div className="card">

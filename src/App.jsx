@@ -218,19 +218,21 @@ const fetchReports = async () => {
 const markLogin = async () => {
   if (!session) return;
 
-  const today = new Date(
-  new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
-).toISOString().split("T")[0];
+  const today = new Date().toISOString().split("T")[0];
 
-
+  // Get employee table ID using auth_id
   const { data: emp } = await supabase
     .from("employees")
     .select("id")
     .eq("auth_id", session.user.id)
     .single();
 
-  if (!emp) return;
+  if (!emp) {
+    alert("Employee not found");
+    return;
+  }
 
+  // Check existing record
   const { data: existing } = await supabase
     .from("attendance")
     .select("*")
@@ -238,55 +240,64 @@ const markLogin = async () => {
     .eq("work_date", today)
     .maybeSingle();
 
-  if (existing && !existing.logout_time) {
-    setTodayAttendance(existing);
+  if (existing) {
     alert("Already logged in today");
+    setTodayRecord(existing);   // 👈 THIS LINE IMPORTANT
     return;
   }
 
-  const { data, error } = await supabase
-    .from("attendance")
-    .insert([
-      {
-        employee_id: emp.id,
-        work_date: today,
-        login_time: new Date().toISOString(),
-      },
-    ])
-    .select()
-    .single();
+  const { error } = await supabase.from("attendance").insert([
+    {
+      employee_id: emp.id,
+      work_date: today,
+      login_time: new Date().toISOString(),
+    },
+  ]);
 
-  if (!error) {
-    setTodayAttendance(data);
+  if (error) {
+    alert("Login failed: " + error.message);
+  } else {
     alert("Login marked successfully");
+    checkTodayAttendance();   // 👈 STEP 4 ANSWER (ikkade)
   }
 };
 
 const markLogout = async () => {
-  if (!todayAttendance) return;
+  if (!session) return;
 
-  const { data, error } = await supabase
+  const today = new Date().toISOString().split("T")[0];
+
+  const { data: emp } = await supabase
+    .from("employees")
+    .select("id")
+    .eq("auth_id", session.user.id)
+    .single();
+
+  if (!emp) {
+    alert("Employee not found");
+    return;
+  }
+
+  const { error } = await supabase
     .from("attendance")
     .update({
       logout_time: new Date().toISOString(),
     })
-    .eq("id", todayAttendance.id)
-    .select()
-    .single();
+    .eq("employee_id", emp.id)   // 👈 STEP 5 ANSWER (ikkade)
+    .eq("work_date", today);
 
-  if (!error) {
-    setTodayAttendance(data);
+  if (error) {
+    alert("Logout failed: " + error.message);
+  } else {
     alert("Logout marked successfully");
+    checkTodayAttendance();   // 👈 STEP 5 ANSWER (ikkade)
   }
 };
 
 const checkTodayAttendance = async () => {
   if (!session) return;
 
-  const today = new Date(
-  new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
-).toISOString().split("T")[0];
-
+  const today = new Date().toISOString().split("T")[0];
 
   const { data: emp } = await supabase
     .from("employees")
@@ -305,6 +316,7 @@ const checkTodayAttendance = async () => {
 
   setTodayAttendance(data);
 };
+
 const formatTime = (time) => {
   if (!time) return "-";
 
@@ -442,6 +454,7 @@ return (
 )}
 
 
+
     {userRole === "director" && (
       <div className="card">
         <h2>Add Employee</h2>
@@ -531,7 +544,7 @@ return (
 
             : "-"}
         </td>
-       <td>{formatTime(rep.login_time)}</td>
+
 <td>{formatTime(rep.logout_time)}</td>
 
         <td>

@@ -58,3 +58,12 @@ table th, table td {
   border: 1px solid #ddd;
   text-align: left;
 }
+html, body, #root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  display: block;
+}

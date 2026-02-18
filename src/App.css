@@ -5,10 +5,10 @@ body {
 
 .container {
   width: 100%;
-  max-width: 100%;
-  padding: 20px 40px;
+  padding: 30px 60px;
   box-sizing: border-box;
 }
+
 
 body {
   margin: 0;

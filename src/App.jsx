@@ -1,3 +1,23 @@
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend
+} from "chart.js";
+
+ChartJS.register(
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend
+);
+
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 
@@ -27,6 +47,7 @@ const [monthlyData, setMonthlyData] = useState({
   totalDays: 0,
   avgCalls: 0
 });
+const [monthlyReports, setMonthlyReports] = useState([]);
 
 
 const [workNote, setWorkNote] = useState("");
@@ -244,6 +265,7 @@ const fetchMonthlySummary = async () => {
     .lte("work_date", endDate);
 
   if (!error && data) {
+    setMonthlyReports(data);
     const totalRevenue = data.reduce(
       (sum, row) => sum + (row.revenue || 0),
       0
@@ -262,6 +284,20 @@ const fetchMonthlySummary = async () => {
       avgCalls: uniqueDays ? Math.round(totalCalls / uniqueDays) : 0
     });
   }
+};
+const chartData = {
+  labels: monthlyReports.map(r =>
+    new Date(r.work_date).toLocaleDateString()
+  ),
+  datasets: [
+    {
+      label: "Daily Revenue",
+      data: monthlyReports.map(r => r.revenue || 0),
+      borderColor: "#4f46e5",
+      backgroundColor: "#6366f1",
+      tension: 0.4
+    }
+  ]
 };
 
 
@@ -658,6 +694,26 @@ return (
 
   </div>
 )}
+{userRole === "director" && monthlyReports.length > 0 && (
+  <div className="card" style={{ width: "100%" }}>
+    <h2>📈 Revenue Chart</h2>
+
+    <div style={{ height: "400px" }}>
+      <Line
+        data={chartData}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true }
+          }
+        }}
+      />
+    </div>
+  </div>
+)}
+
+
 
 
 {userRole === "director" && (

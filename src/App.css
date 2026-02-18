@@ -3,11 +3,7 @@ body {
   padding: 0;
 }
 
-.container {
-  width: 100%;
-  padding: 30px 60px;
-  box-sizing: border-box;
-}
+
 
 
 body {
@@ -62,9 +58,7 @@ body {
   font-family: 'Segoe UI', sans-serif;
 }
 
-.container {
-  padding: 30px;
-}
+
 
 .header {
   display: flex;
@@ -223,10 +217,12 @@ body {
 
 .container {
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
+  max-width: 100%;
+  margin: 0;
+  padding: 30px;
+  box-sizing: border-box;
 }
+
 
 .card {
   background: white;

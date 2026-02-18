@@ -18,6 +18,15 @@ const [reports, setReports] = useState([]);
 const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  const [selectedMonth, setSelectedMonth] = useState(
+  new Date().toISOString().slice(0, 7)
+);
+
+const [monthlyData, setMonthlyData] = useState({
+  totalRevenue: 0,
+  totalDays: 0,
+  avgCalls: 0
+});
 
 
 const [workNote, setWorkNote] = useState("");
@@ -57,9 +66,10 @@ useEffect(() => {
 useEffect(() => {
   if (session && userRole) {
     fetchEmployees();
-     fetchReports(); 
+    fetchReports();
+    fetchMonthlySummary();
   }
-}, [session, userRole, selectedDate]);
+}, [session, userRole, selectedDate, selectedMonth]);
 
 
   const fetchEmployees = async () => {
@@ -216,6 +226,44 @@ const fetchReports = async () => {
 
   if (!error) setReports(data);
 };
+const fetchMonthlySummary = async () => {
+  const startDate = selectedMonth + "-01";
+
+  const lastDay = new Date(
+    selectedMonth.split("-")[0],
+    selectedMonth.split("-")[1],
+    0
+  ).getDate();
+
+  const endDate = selectedMonth + "-" + lastDay;
+
+  const { data, error } = await supabase
+    .from("attendance")
+    .select("revenue, calls, work_date")
+    .gte("work_date", startDate)
+    .lte("work_date", endDate);
+
+  if (!error && data) {
+    const totalRevenue = data.reduce(
+      (sum, row) => sum + (row.revenue || 0),
+      0
+    );
+
+    const totalCalls = data.reduce(
+      (sum, row) => sum + (row.calls || 0),
+      0
+    );
+
+    const uniqueDays = [...new Set(data.map(row => row.work_date))].length;
+
+    setMonthlyData({
+      totalRevenue,
+      totalDays: uniqueDays,
+      avgCalls: uniqueDays ? Math.round(totalCalls / uniqueDays) : 0
+    });
+  }
+};
+
 
 
 const markLogin = async () => {
@@ -430,9 +478,51 @@ return (
         </h1>
       </div>
 
+
     </div>
   </>
 )}
+{userRole === "director" && (
+  <div className="card">
+    <h2>📊 Monthly Summary</h2>
+
+    <div style={{ marginBottom: "15px" }}>
+      <label style={{ marginRight: "10px", fontWeight: "bold" }}>
+        Select Month:
+      </label>
+
+      <input
+        type="month"
+        value={selectedMonth}
+        onChange={(e) => setSelectedMonth(e.target.value)}
+      />
+    </div>
+
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+      gap: "15px"
+    }}>
+
+      <div className="statCard">
+        <h3>Total Revenue</h3>
+        <h1>₹{monthlyData.totalRevenue}</h1>
+      </div>
+
+      <div className="statCard">
+        <h3>Working Days</h3>
+        <h1>{monthlyData.totalDays}</h1>
+      </div>
+
+      <div className="statCard">
+        <h3>Avg Calls / Day</h3>
+        <h1>{monthlyData.avgCalls}</h1>
+      </div>
+
+    </div>
+  </div>
+)}
+
 {userRole === "employee" && (
   <div className="card">
     <h2>Today's Attendance</h2>
@@ -523,6 +613,8 @@ return (
 )}
 {userRole === "director" && (
   <div className="card">
+    
+
     <h2>Attendance History</h2>
 
     <div style={{ marginBottom: "15px" }}>

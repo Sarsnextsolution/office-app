@@ -25,7 +25,7 @@ function App() {
   const [session, setSession] = useState(null);
   const [employees, setEmployees] = useState([]);
   const [userRole, setUserRole] = useState(null);
-
+const [activePage, setActivePage] = useState("dashboard");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [salary, setSalary] = useState("");
@@ -480,10 +480,12 @@ function App() {
         <div className="sidebar">
           <h2 className="logoText">SARS Admin</h2>
           <ul>
-            <li>Dashboard</li>
-            <li>Attendance</li>
-            <li>Reports</li>
-            <li>Employees</li>
+            <li onClick={() => setActivePage("dashboard")}>Dashboard</li>
+<li onClick={() => setActivePage("attendance")}>Attendance</li>
+<li onClick={() => setActivePage("reports")}>Reports</li>
+<li onClick={() => setActivePage("employees")}>Employees</li>
+<li onClick={() => setActivePage("salary")}>Salary</li>
+
           </ul>
         </div>
       )}
@@ -670,7 +672,7 @@ function App() {
             <button onClick={submitReport}>Submit Report</button>
           </div>
         )}
-        {userRole === "director" && (
+        {activePage === "attendance" && userRole === "director" && (
           <div className="card">
 
 
@@ -739,7 +741,7 @@ function App() {
 
 
 
-        {userRole === "director" && (
+        {activePage === "reports" && userRole === "director" && (
           <div className="card">
             <h2>Employee Performance Reports</h2>
 
@@ -770,7 +772,7 @@ function App() {
             </table>
           </div>
         )}
-
+{activePage === "employees" && (
         <div className="card">
           <h2>Employee List</h2>
 
@@ -810,6 +812,42 @@ function App() {
             </tbody>
           </table>
         </div>
+        )}
+{activePage === "salary" && userRole === "director" && (
+  <div className="card">
+    <h2>Salary Overview</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Base Salary</th>
+          <th>Commission (5%)</th>
+          <th>Total Salary</th>
+        </tr>
+      </thead>
+      <tbody>
+        {employees.map(emp => {
+          const totalRevenue = reports
+            .filter(r => r.employees?.name === emp.name)
+            .reduce((sum, r) => sum + (r.revenue || 0), 0);
+
+          const commission = totalRevenue * 0.05;
+          const totalSalary = Number(emp.salary) + commission;
+
+          return (
+            <tr key={emp.id}>
+              <td>{emp.name}</td>
+              <td>₹{emp.salary}</td>
+              <td>₹{commission}</td>
+              <td>₹{totalSalary}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+)}
 
       </div> {/* mainContent */}
     </div> 

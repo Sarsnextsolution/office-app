@@ -51,6 +51,8 @@ const [activePage, setActivePage] = useState("dashboard");
 const [leaveDate, setLeaveDate] = useState("");
 const [leaveType, setLeaveType] = useState("sick");
 const [leaveList, setLeaveList] = useState([]);
+const [allLeaves, setAllLeaves] = useState([]);
+
 
 
   const [workNote, setWorkNote] = useState("");
@@ -99,6 +101,12 @@ useEffect(() => {
     fetchLeaves();
   }
 }, [session, userRole]);
+useEffect(() => {
+  if (userRole === "director") {
+    fetchAllLeaves();
+  }
+}, [userRole]);
+
 
 
   const fetchEmployees = async () => {
@@ -481,6 +489,32 @@ const fetchLeaves = async () => {
 
   setLeaveList(data || []);
 };
+const fetchAllLeaves = async () => {
+  const { data, error } = await supabase
+    .from("leave_requests")
+    .select(`
+      id,
+      leave_date,
+      leave_type,
+      status,
+      employees ( name )
+    `)
+    .order("leave_date", { ascending: false });
+
+  if (!error) {
+    setAllLeaves(data || []);
+  }
+};
+const updateLeaveStatus = async (id, newStatus) => {
+  const { error } = await supabase
+    .from("leave_requests")
+    .update({ status: newStatus })
+    .eq("id", id);
+
+  if (!error) {
+    fetchAllLeaves();
+  }
+};
 
   //---------Login Page----------//
   if (!session) {
@@ -543,6 +577,9 @@ const fetchLeaves = async () => {
 <li onClick={() => setActivePage("reports")}>Reports</li>
 <li onClick={() => setActivePage("employees")}>Employees</li>
 <li onClick={() => setActivePage("salary")}>Salary</li>
+<li onClick={() => setActivePage("leaves")}>Leaves</li>
+
+
 
           </ul>
         </div>
@@ -824,6 +861,47 @@ const fetchLeaves = async () => {
 
           </div>
         )}
+        {activePage === "leaves" && userRole === "director" && (
+  <div className="card">
+    <h2>Leave Approval Panel</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {allLeaves.map((leave) => (
+          <tr key={leave.id}>
+            <td>{leave.employees?.name}</td>
+            <td>{leave.leave_date}</td>
+            <td>{leave.leave_type}</td>
+            <td>{leave.status}</td>
+            <td>
+              {leave.status === "pending" && (
+                <>
+                  <button onClick={() => updateLeaveStatus(leave.id, "approved")}>
+                    Approve
+                  </button>
+                  <button onClick={() => updateLeaveStatus(leave.id, "rejected")}>
+                    Reject
+                  </button>
+                </>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
         {userRole === "director" && monthlyReports.length > 0 && (
           <div className="card" style={{ width: "100%" }}>
             <h2>📈 Revenue Chart</h2>

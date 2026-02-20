@@ -730,8 +730,10 @@ const fetchLeaves = async () => {
             <button onClick={submitReport}>Submit Report</button>
           </div>
         )}
-        <div className="card">
-  <h2>Apply Leave</h2>
+        {userRole === "employee" && (
+        <>
+  <div className="card">
+    <h2>Apply Leave</h2>
 
   <input
     type="date"
@@ -772,6 +774,8 @@ const fetchLeaves = async () => {
     </tbody>
   </table>
 </div>
+</>
+)}
 
         {activePage === "attendance" && userRole === "director" && (
           <div className="card">

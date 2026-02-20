@@ -52,6 +52,7 @@ const [leaveDate, setLeaveDate] = useState("");
 const [leaveType, setLeaveType] = useState("sick");
 const [leaveList, setLeaveList] = useState([]);
 const [allLeaves, setAllLeaves] = useState([]);
+const [salaryData, setSalaryData] = useState([]);
 
 
 
@@ -106,6 +107,13 @@ useEffect(() => {
     fetchAllLeaves();
   }
 }, [userRole]);
+useEffect(() => {
+  if (activePage === "salary" && userRole === "director") {
+    generateSalaryData();
+  }
+}, [activePage, selectedMonth]);
+
+
 
 
 
@@ -137,6 +145,20 @@ useEffect(() => {
       setUserRole("unknown");
     }
   };
+const generateSalaryData = async () => {
+  const results = [];
+
+  for (let emp of employees) {
+    const finalSalary = await calculateFinalSalary(emp, selectedMonth);
+
+    results.push({
+      ...emp,
+      finalSalary
+    });
+  }
+
+  setSalaryData(results);
+};
 
 
   // Login
@@ -439,6 +461,66 @@ useEffect(() => {
     const commission = employeeRevenue * 0.05;
     return Number(baseSalary) + commission;
   };
+  const calculateFinalSalary = async (employee, month) => {
+  const year = month.split("-")[0];
+  const monthNumber = month.split("-")[1];
+
+  const totalDaysInMonth = new Date(year, monthNumber, 0).getDate();
+  const dailySalary = employee.salary / totalDaysInMonth;
+
+  // Get attendance records for that month
+  const { data: attendanceData } = await supabase
+    .from("attendance")
+    .select("work_date")
+    .eq("employee_id", employee.id)
+    .gte("work_date", `${month}-01`)
+    .lte("work_date", `${month}-${totalDaysInMonth}`);
+
+  // Get approved leaves
+  const { data: leaveData } = await supabase
+    .from("leave_requests")
+    .select("leave_date")
+    .eq("employee_id", employee.id)
+    .eq("status", "approved")
+    .gte("leave_date", `${month}-01`)
+    .lte("leave_date", `${month}-${totalDaysInMonth}`);
+
+  const attendanceDates = attendanceData?.map(a => a.work_date) || [];
+  const leaveDates = leaveData?.map(l => l.leave_date) || [];
+
+  let unpaidDays = 0;
+  let paidLeaveUsed = false;
+
+  for (let day = 1; day <= totalDaysInMonth; day++) {
+    const date = `${month}-${String(day).padStart(2, "0")}`;
+    const currentDate = new Date(date);
+    const dayOfWeek = currentDate.getDay(); // Sunday = 0
+
+    const isSunday = dayOfWeek === 0;
+    const isPresent = attendanceDates.includes(date);
+    const isLeave = leaveDates.includes(date);
+
+    if (isSunday) continue;
+
+    if (isLeave) {
+      if (!paidLeaveUsed) {
+        paidLeaveUsed = true;
+      } else {
+        unpaidDays++;
+      }
+      continue;
+    }
+
+    if (!isPresent) {
+      unpaidDays++;
+    }
+  }
+
+  const finalSalary = employee.salary - (unpaidDays * dailySalary);
+
+  return Math.round(finalSalary);
+};
+
 const applyLeave = async () => {
   if (!session) return;
 
@@ -984,7 +1066,7 @@ const updateLeaveStatus = async (id, newStatus) => {
                   {userRole === "director" && (
                     <>
                       <td>₹{emp.salary}</td>
-                      <td>₹{calculateSalary(emp.salary, emp.name)}</td>
+                      <td>₹{emp.salary}</td>
                     </>
                   )}
 
@@ -1004,33 +1086,23 @@ const updateLeaveStatus = async (id, newStatus) => {
       <thead>
         <tr>
           <th>Name</th>
-          <th>Base Salary</th>
-          <th>Commission (5%)</th>
-          <th>Total Salary</th>
+          <th>Monthly Salary</th>
+          <th>Final Salary (After Deductions)</th>
         </tr>
       </thead>
       <tbody>
-        {employees.map(emp => {
-          const totalRevenue = reports
-            .filter(r => r.employees?.name === emp.name)
-            .reduce((sum, r) => sum + (r.revenue || 0), 0);
-
-          const commission = totalRevenue * 0.05;
-          const totalSalary = Number(emp.salary) + commission;
-
-          return (
-            <tr key={emp.id}>
-              <td>{emp.name}</td>
-              <td>₹{emp.salary}</td>
-              <td>₹{commission}</td>
-              <td>₹{totalSalary}</td>
-            </tr>
-          );
-        })}
+        {salaryData.map(emp => (
+          <tr key={emp.id}>
+            <td>{emp.name}</td>
+            <td>₹{emp.salary}</td>
+            <td>₹{emp.finalSalary}</td>
+          </tr>
+        ))}
       </tbody>
     </table>
   </div>
 )}
+
 
       </div> {/* mainContent */}
     </div> 

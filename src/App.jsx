@@ -48,6 +48,9 @@ const [activePage, setActivePage] = useState("dashboard");
     avgCalls: 0
   });
   const [monthlyReports, setMonthlyReports] = useState([]);
+const [leaveDate, setLeaveDate] = useState("");
+const [leaveType, setLeaveType] = useState("sick");
+const [leaveList, setLeaveList] = useState([]);
 
 
   const [workNote, setWorkNote] = useState("");
@@ -91,6 +94,11 @@ const [activePage, setActivePage] = useState("dashboard");
       fetchMonthlySummary();
     }
   }, [session, userRole, selectedDate, selectedMonth]);
+useEffect(() => {
+  if (session && userRole === "employee") {
+    fetchLeaves();
+  }
+}, [session, userRole]);
 
 
   const fetchEmployees = async () => {
@@ -423,6 +431,56 @@ const [activePage, setActivePage] = useState("dashboard");
     const commission = employeeRevenue * 0.05;
     return Number(baseSalary) + commission;
   };
+const applyLeave = async () => {
+  if (!session) return;
+
+  const { data: emp } = await supabase
+    .from("employees")
+    .select("id")
+    .eq("auth_id", session.user.id)
+    .single();
+
+  if (!emp) {
+    alert("Employee not found");
+    return;
+  }
+
+  const { error } = await supabase.from("leave_requests").insert([
+    {
+      employee_id: emp.id,
+      leave_date: leaveDate,
+      leave_type: leaveType,
+      status: "pending"
+    }
+  ]);
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Leave Applied Successfully");
+    setLeaveDate("");
+    fetchLeaves();
+  }
+};
+const fetchLeaves = async () => {
+  if (!session) return;
+
+  const { data: emp } = await supabase
+    .from("employees")
+    .select("id")
+    .eq("auth_id", session.user.id)
+    .single();
+
+  if (!emp) return;
+
+  const { data } = await supabase
+    .from("leave_requests")
+    .select("*")
+    .eq("employee_id", emp.id)
+    .order("leave_date", { ascending: false });
+
+  setLeaveList(data || []);
+};
 
   //---------Login Page----------//
   if (!session) {
@@ -672,6 +730,49 @@ const [activePage, setActivePage] = useState("dashboard");
             <button onClick={submitReport}>Submit Report</button>
           </div>
         )}
+        <div className="card">
+  <h2>Apply Leave</h2>
+
+  <input
+    type="date"
+    value={leaveDate}
+    onChange={(e) => setLeaveDate(e.target.value)}
+  />
+
+  <select
+    value={leaveType}
+    onChange={(e) => setLeaveType(e.target.value)}
+  >
+    <option value="sick">Sick Leave</option>
+    <option value="casual">Casual Leave</option>
+  </select>
+
+  <button onClick={applyLeave}>Apply Leave</button>
+</div>
+
+<div className="card">
+  <h2>My Leave History</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {leaveList.map((leave) => (
+        <tr key={leave.id}>
+          <td>{leave.leave_date}</td>
+          <td>{leave.leave_type}</td>
+          <td>{leave.status}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
         {activePage === "attendance" && userRole === "director" && (
           <div className="card">
 

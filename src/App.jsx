@@ -149,12 +149,12 @@ const generateSalaryData = async () => {
   const results = [];
 
   for (let emp of employees) {
-    const finalSalary = await calculateFinalSalary(emp, selectedMonth);
+ const breakdown = await calculateFinalSalary(emp, selectedMonth);
 
-    results.push({
-      ...emp,
-      finalSalary
-    });
+results.push({
+  ...emp,
+  ...breakdown
+});
   }
 
   setSalaryData(results);
@@ -461,14 +461,13 @@ const generateSalaryData = async () => {
     const commission = employeeRevenue * 0.05;
     return Number(baseSalary) + commission;
   };
-  const calculateFinalSalary = async (employee, month) => {
+const calculateFinalSalary = async (employee, month) => {
   const year = month.split("-")[0];
   const monthNumber = month.split("-")[1];
 
   const totalDaysInMonth = new Date(year, monthNumber, 0).getDate();
   const dailySalary = employee.salary / totalDaysInMonth;
 
-  // Get attendance records for that month
   const { data: attendanceData } = await supabase
     .from("attendance")
     .select("work_date")
@@ -476,7 +475,6 @@ const generateSalaryData = async () => {
     .gte("work_date", `${month}-01`)
     .lte("work_date", `${month}-${totalDaysInMonth}`);
 
-  // Get approved leaves
   const { data: leaveData } = await supabase
     .from("leave_requests")
     .select("leave_date")
@@ -490,17 +488,27 @@ const generateSalaryData = async () => {
 
   let unpaidDays = 0;
   let paidLeaveUsed = false;
+  let sundayCount = 0;
+  let presentDays = 0;
+  let approvedLeaveCount = leaveDates.length;
 
   for (let day = 1; day <= totalDaysInMonth; day++) {
     const date = `${month}-${String(day).padStart(2, "0")}`;
     const currentDate = new Date(date);
-    const dayOfWeek = currentDate.getDay(); // Sunday = 0
+    const dayOfWeek = currentDate.getDay();
 
     const isSunday = dayOfWeek === 0;
     const isPresent = attendanceDates.includes(date);
     const isLeave = leaveDates.includes(date);
 
-    if (isSunday) continue;
+    if (isSunday) {
+      sundayCount++;
+      continue;
+    }
+
+    if (isPresent) {
+      presentDays++;
+    }
 
     if (isLeave) {
       if (!paidLeaveUsed) {
@@ -516,9 +524,19 @@ const generateSalaryData = async () => {
     }
   }
 
-  const finalSalary = employee.salary - (unpaidDays * dailySalary);
+  const deductionAmount = unpaidDays * dailySalary;
+  const finalSalary = employee.salary - deductionAmount;
 
-  return Math.round(finalSalary);
+  return {
+    totalDaysInMonth,
+    sundayCount,
+    presentDays,
+    approvedLeaveCount,
+    unpaidDays,
+    dailySalary: Math.round(dailySalary),
+    deductionAmount: Math.round(deductionAmount),
+    finalSalary: Math.round(finalSalary)
+  };
 };
 
 const applyLeave = async () => {
@@ -1080,22 +1098,34 @@ const updateLeaveStatus = async (id, newStatus) => {
         )}
 {activePage === "salary" && userRole === "director" && (
   <div className="card">
-    <h2>Salary Overview</h2>
+    <h2>Salary Breakdown</h2>
 
     <table>
       <thead>
         <tr>
           <th>Name</th>
-          <th>Monthly Salary</th>
-          <th>Final Salary (After Deductions)</th>
+          <th>Total Days</th>
+          <th>Sundays</th>
+          <th>Present</th>
+          <th>Approved Leaves</th>
+          <th>Unpaid Days</th>
+          <th>Per Day Salary</th>
+          <th>Deduction</th>
+          <th>Final Salary</th>
         </tr>
       </thead>
       <tbody>
         {salaryData.map(emp => (
           <tr key={emp.id}>
             <td>{emp.name}</td>
-            <td>₹{emp.salary}</td>
-            <td>₹{emp.finalSalary}</td>
+            <td>{emp.totalDaysInMonth}</td>
+            <td>{emp.sundayCount}</td>
+            <td>{emp.presentDays}</td>
+            <td>{emp.approvedLeaveCount}</td>
+            <td>{emp.unpaidDays}</td>
+            <td>₹{emp.dailySalary}</td>
+            <td>₹{emp.deductionAmount}</td>
+            <td><strong>₹{emp.finalSalary}</strong></td>
           </tr>
         ))}
       </tbody>

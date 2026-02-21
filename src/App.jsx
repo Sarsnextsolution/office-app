@@ -20,6 +20,10 @@ ChartJS.register(
 
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 function App() {
   const [session, setSession] = useState(null);
@@ -551,6 +555,65 @@ if (isHoliday) {
     deductionAmount: Math.round(deductionAmount),
     finalSalary: Math.round(finalSalary)
   };
+};
+const exportToExcel = () => {
+  const worksheetData = salaryData.map(emp => ({
+    Name: emp.name,
+    "Total Days": emp.totalDaysInMonth,
+    Sundays: emp.sundayCount,
+    Festivals: emp.festivalCount,
+    Present: emp.presentDays,
+    "Approved Leaves": emp.approvedLeaveCount,
+    "Unpaid Days": emp.unpaidDays,
+    "Per Day Salary": emp.dailySalary,
+    Deduction: emp.deductionAmount,
+    "Final Salary": emp.finalSalary
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Payroll");
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array"
+  });
+
+  const fileData = new Blob([excelBuffer], {
+    type:
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"
+  });
+
+  saveAs(fileData, `Payroll-${selectedMonth}.xlsx`);
+};
+const generateSalarySlip = (emp) => {
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text("Salary Slip", 80, 15);
+
+  doc.setFontSize(12);
+  doc.text(`Company: SARS Next Solutions`, 14, 30);
+  doc.text(`Month: ${selectedMonth}`, 14, 37);
+  doc.text(`Employee Name: ${emp.name}`, 14, 44);
+
+  autoTable(doc, {
+    startY: 55,
+    head: [["Description", "Value"]],
+    body: [
+      ["Total Days", emp.totalDaysInMonth],
+      ["Sundays", emp.sundayCount],
+      ["Festivals", emp.festivalCount],
+      ["Present Days", emp.presentDays],
+      ["Approved Leaves", emp.approvedLeaveCount],
+      ["Unpaid Days", emp.unpaidDays],
+      ["Per Day Salary", `₹${emp.dailySalary}`],
+      ["Deduction", `₹${emp.deductionAmount}`],
+      ["Final Salary", `₹${emp.finalSalary}`],
+    ],
+  });
+
+  doc.save(`SalarySlip-${emp.name}-${selectedMonth}.pdf`);
 };
 
 const applyLeave = async () => {
@@ -1113,6 +1176,9 @@ const updateLeaveStatus = async (id, newStatus) => {
 {activePage === "salary" && userRole === "director" && (
   <div className="card">
     <h2>Salary Breakdown</h2>
+    <button onClick={exportToExcel} style={{ marginBottom: "15px" }}>
+  Download Excel
+</button>
 
     <table>
       <thead>
@@ -1127,6 +1193,7 @@ const updateLeaveStatus = async (id, newStatus) => {
           <th>Per Day Salary</th>
           <th>Deduction</th>
           <th>Final Salary</th>
+          <th>Salary Slip</th>
         </tr>
       </thead>
       <tbody>
@@ -1142,6 +1209,11 @@ const updateLeaveStatus = async (id, newStatus) => {
             <td>₹{emp.dailySalary}</td>
             <td>₹{emp.deductionAmount}</td>
             <td><strong>₹{emp.finalSalary}</strong></td>
+            <td>
+  <button onClick={() => generateSalarySlip(emp)}>
+    Generate PDF
+  </button>
+</td>
           </tr>
         ))}
       </tbody>

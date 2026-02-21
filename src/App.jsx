@@ -162,7 +162,10 @@ const generateSalaryData = async () => {
 results.push({
   ...emp,
   auth_id: emp.auth_id,
-  ...breakdown
+  paidDays,
+  unpaidDays,
+  festivalDays,
+  finalSalary
 });
   }
 
@@ -1008,7 +1011,23 @@ const updateLeaveStatus = async (id, newStatus) => {
 </div>
 </>
 )}
+{salaryData
+  .filter(emp => emp.auth_id === session.user.id)
+  .map(emp => (
+    <div className="card" key={emp.id}>
+      <h2>My Salary Slip ({selectedMonth})</h2>
 
+      <p><strong>Base Salary:</strong> ₹{emp.salary}</p>
+      <p><strong>Paid Days:</strong> {emp.paidDays}</p>
+      <p><strong>Unpaid Days:</strong> {emp.unpaidDays}</p>
+      <p><strong>Festival Days:</strong> {emp.festivalDays}</p>
+      <p><strong>Final Salary:</strong> ₹{emp.finalSalary}</p>
+
+      <button onClick={() => downloadPayslip(emp)}>
+        Download PDF
+      </button>
+    </div>
+))}
         {activePage === "attendance" && userRole === "director" && (
           <div className="card">
 

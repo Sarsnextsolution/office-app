@@ -482,6 +482,13 @@ const calculateFinalSalary = async (employee, month) => {
     .eq("status", "approved")
     .gte("leave_date", `${month}-01`)
     .lte("leave_date", `${month}-${totalDaysInMonth}`);
+    const { data: holidayData } = await supabase
+  .from("holidays")
+  .select("holidays")   // your column name
+  .gte("holidays", `${month}-01`)
+  .lte("holidays", `${month}-${totalDaysInMonth}`);
+
+const holidayDates = holidayData?.map(h => h.holidays) || [];
 
   const attendanceDates = attendanceData?.map(a => a.work_date) || [];
   const leaveDates = leaveData?.map(l => l.leave_date) || [];
@@ -497,14 +504,19 @@ const calculateFinalSalary = async (employee, month) => {
     const currentDate = new Date(date);
     const dayOfWeek = currentDate.getDay();
 
-    const isSunday = dayOfWeek === 0;
-    const isPresent = attendanceDates.includes(date);
-    const isLeave = leaveDates.includes(date);
+  const isSunday = dayOfWeek === 0;
+const isHoliday = holidayDates.includes(date);
+const isPresent = attendanceDates.includes(date);
+const isLeave = leaveDates.includes(date);
 
-    if (isSunday) {
-      sundayCount++;
-      continue;
-    }
+if (isSunday) {
+  sundayCount++;
+  continue;
+}
+
+if (isHoliday) {
+  continue; // Paid festival
+}
 
     if (isPresent) {
       presentDays++;

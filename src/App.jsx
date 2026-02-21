@@ -489,6 +489,7 @@ const calculateFinalSalary = async (employee, month) => {
   .lte("holidays", `${month}-${totalDaysInMonth}`);
 
 const holidayDates = holidayData?.map(h => h.holidays) || [];
+let festivalCount = holidayDates.length;
 
   const attendanceDates = attendanceData?.map(a => a.work_date) || [];
   const leaveDates = leaveData?.map(l => l.leave_date) || [];
@@ -542,6 +543,7 @@ if (isHoliday) {
   return {
     totalDaysInMonth,
     sundayCount,
+    festivalCount,
     presentDays,
     approvedLeaveCount,
     unpaidDays,
@@ -1118,6 +1120,7 @@ const updateLeaveStatus = async (id, newStatus) => {
           <th>Name</th>
           <th>Total Days</th>
           <th>Sundays</th>
+          <th>Festivals</th>
           <th>Present</th>
           <th>Approved Leaves</th>
           <th>Unpaid Days</th>
@@ -1132,6 +1135,7 @@ const updateLeaveStatus = async (id, newStatus) => {
             <td>{emp.name}</td>
             <td>{emp.totalDaysInMonth}</td>
             <td>{emp.sundayCount}</td>
+            <td>{emp.festivalCount}</td>
             <td>{emp.presentDays}</td>
             <td>{emp.approvedLeaveCount}</td>
             <td>{emp.unpaidDays}</td>

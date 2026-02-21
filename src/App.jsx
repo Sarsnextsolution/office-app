@@ -157,6 +157,7 @@ const generateSalaryData = async () => {
 
 results.push({
   ...emp,
+  auth_id: emp.auth_id,
   ...breakdown
 });
   }
@@ -944,6 +945,19 @@ const updateLeaveStatus = async (id, newStatus) => {
             <button onClick={submitReport}>Submit Report</button>
           </div>
         )}
+        {userRole === "employee" && salaryData.length > 0 && (
+  <div className="card">
+    <h2>My Salary Slip</h2>
+
+    {salaryData.map(emp => (
+      emp.auth_id === session.user.id && (
+        <button onClick={() => generateSalarySlip(emp)}>
+          Download My Salary Slip
+        </button>
+      )
+    ))}
+  </div>
+)}
         {userRole === "employee" && (
         <>
   <div className="card">

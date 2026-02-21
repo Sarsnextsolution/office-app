@@ -112,10 +112,14 @@ useEffect(() => {
   }
 }, [userRole]);
 useEffect(() => {
-  if (activePage === "salary" && userRole === "director") {
+  if (userRole === "director" && activePage === "salary") {
     generateSalaryData();
   }
-}, [activePage, selectedMonth]);
+
+  if (userRole === "employee") {
+    generateSalaryData();
+  }
+}, [activePage, selectedMonth, userRole]);
 
 
 

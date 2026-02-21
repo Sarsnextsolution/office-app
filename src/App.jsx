@@ -93,7 +93,11 @@ const [salaryData, setSalaryData] = useState([]);
       checkTodayAttendance();
     }
   }, [session]);
-
+useEffect(() => {
+  if (employees.length > 0) {
+    generateSalaryData();
+  }
+}, [employees, selectedMonth]);
   useEffect(() => {
     if (session && userRole) {
       fetchEmployees();
@@ -120,7 +124,6 @@ useEffect(() => {
     generateSalaryData();
   }
 }, [activePage, selectedMonth, userRole]);
-
 
 
 
@@ -154,19 +157,17 @@ useEffect(() => {
     }
   };
 const generateSalaryData = async () => {
+  if (!employees.length) return;
+
   const results = [];
 
   for (let emp of employees) {
- const breakdown = await calculateFinalSalary(emp, selectedMonth);
+    const breakdown = await calculateFinalSalary(emp, selectedMonth);
 
-results.push({
-  ...emp,
-  auth_id: emp.auth_id,
-  paidDays,
-  unpaidDays,
-  festivalDays,
-  finalSalary
-});
+    results.push({
+      ...emp,
+      ...breakdown   // 👈 VERY IMPORTANT
+    });
   }
 
   setSalaryData(results);
@@ -1011,23 +1012,7 @@ const updateLeaveStatus = async (id, newStatus) => {
 </div>
 </>
 )}
-{salaryData
-  .filter(emp => emp.auth_id === session.user.id)
-  .map(emp => (
-    <div className="card" key={emp.id}>
-      <h2>My Salary Slip ({selectedMonth})</h2>
 
-      <p><strong>Base Salary:</strong> ₹{emp.salary}</p>
-      <p><strong>Paid Days:</strong> {emp.paidDays}</p>
-      <p><strong>Unpaid Days:</strong> {emp.unpaidDays}</p>
-      <p><strong>Festival Days:</strong> {emp.festivalDays}</p>
-      <p><strong>Final Salary:</strong> ₹{emp.finalSalary}</p>
-
-      <button onClick={() => downloadPayslip(emp)}>
-        Download PDF
-      </button>
-    </div>
-))}
         {activePage === "attendance" && userRole === "director" && (
           <div className="card">
 

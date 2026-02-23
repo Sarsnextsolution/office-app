@@ -139,5 +139,70 @@ button {
 button:hover {
   background: #2e59d9;
 }
+.loginContainer {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+}
 
+.loginCard {
+  background: white;
+  padding: 40px;
+  width: 350px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.loginCard h1 {
+  margin-bottom: 5px;
+  color: #4f46e5;
+}
+
+.loginCard p {
+  margin-bottom: 25px;
+  color: gray;
+}
+
+.loginCard input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.loginCard button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #4f46e5;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.loginCard button:hover {
+  background: #4338ca;
+}
+.sidebar ul li {
+  padding: 12px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.sidebar ul li:hover {
+  background: #eef2ff;
+}
+
+.activeMenu {
+  background: #4f46e5;
+  color: white;
+  font-weight: bold;
+}
 

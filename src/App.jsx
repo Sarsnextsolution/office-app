@@ -704,29 +704,30 @@ const updateLeaveStatus = async (id, newStatus) => {
 
   //---------Login Page----------//
   if (!session) {
-    return (
-      <div className="container">
-        <div className="card">
-          <h2>Office Management Login</h2>
+  return (
+    <div className="loginContainer">
+      <div className="loginCard">
+        <h1>SARS Next Solutions</h1>
+        <p>Office Management System</p>
 
-          <input
-            placeholder="Email"
-            value={loginEmail}
-            onChange={(e) => setLoginEmail(e.target.value)}
-          />
+        <input
+          placeholder="Email Address"
+          value={loginEmail}
+          onChange={(e) => setLoginEmail(e.target.value)}
+        />
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={loginPassword}
-            onChange={(e) => setLoginPassword(e.target.value)}
-          />
+        <input
+          type="password"
+          placeholder="Password"
+          value={loginPassword}
+          onChange={(e) => setLoginPassword(e.target.value)}
+        />
 
-          <button onClick={handleLogin}>Login</button>
-        </div>
+        <button onClick={handleLogin}>Login</button>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
 
   // ---------------- DASHBOARD ----------------
@@ -758,13 +759,47 @@ const updateLeaveStatus = async (id, newStatus) => {
         <div className="sidebar">
           <h2 className="logoText">SARS Admin</h2>
           <ul>
-            <li onClick={() => setActivePage("dashboard")}>Dashboard</li>
-<li onClick={() => setActivePage("attendance")}>Attendance</li>
-<li onClick={() => setActivePage("reports")}>Reports</li>
-<li onClick={() => setActivePage("employees")}>Employees</li>
-<li onClick={() => setActivePage("salary")}>Salary</li>
-<li onClick={() => setActivePage("leaves")}>Leaves</li>
+          <li 
+  className={activePage === "dashboard" ? "activeMenu" : ""}
+  onClick={() => setActivePage("dashboard")}
+>
+  Dashboard
+</li>
 
+<li 
+  className={activePage === "attendance" ? "activeMenu" : ""}
+  onClick={() => setActivePage("attendance")}
+>
+  Attendance
+</li>
+
+<li 
+  className={activePage === "reports" ? "activeMenu" : ""}
+  onClick={() => setActivePage("reports")}
+>
+  Reports
+</li>
+
+<li 
+  className={activePage === "employees" ? "activeMenu" : ""}
+  onClick={() => setActivePage("employees")}
+>
+  Employees
+</li>
+
+<li 
+  className={activePage === "salary" ? "activeMenu" : ""}
+  onClick={() => setActivePage("salary")}
+>
+  Salary
+</li>
+
+<li 
+  className={activePage === "leaves" ? "activeMenu" : ""}
+  onClick={() => setActivePage("leaves")}
+>
+  Leaves
+</li>
 
 
           </ul>

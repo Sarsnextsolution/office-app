@@ -785,7 +785,7 @@ const updateLeaveStatus = async (id, newStatus) => {
 
           <button onClick={handleLogout}>Logout</button>
         </div>
-        {userRole === "director" && (
+        {userRole === "director" && activePage === "dashboard" && (
           <>
             <div style={{
               display: "grid",
@@ -824,7 +824,7 @@ const updateLeaveStatus = async (id, newStatus) => {
             </div>
           </>
         )}
-        {userRole === "director" && (
+        {userRole === "director" && activePage === "dashboard" && (
           <div className="card">
             <h2>📊 Monthly Summary</h2>
 
@@ -890,7 +890,7 @@ const updateLeaveStatus = async (id, newStatus) => {
 
 
 
-        {userRole === "director" && (
+        {userRole === "director" && activePage === "employees" && (
           <div className="card">
             <h2>Add Employee</h2>
 
@@ -1101,7 +1101,7 @@ const updateLeaveStatus = async (id, newStatus) => {
   </div>
 )}
 
-        {userRole === "director" && monthlyReports.length > 0 && (
+        {userRole === "director" && activePage === "dashboard" && monthlyReports.length > 0 && (
           <div className="card" style={{ width: "100%" }}>
             <h2>📈 Revenue Chart</h2>
 

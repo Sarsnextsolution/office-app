@@ -824,7 +824,7 @@ const updateLeaveStatus = async (id, newStatus) => {
           <>
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gridTemplateColumns: "repeat(4, 1fr)",
               gap: "20px",
               marginBottom: "30px"
             }}>

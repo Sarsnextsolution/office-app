@@ -51,8 +51,7 @@ body {
 .mainContent {
   flex: 1;
   padding: 40px;
-  max-width: 1200px;
-  margin: auto;
+background: #f4f6f9;
 }
 
 /* ===== HEADER ===== */
@@ -207,4 +206,8 @@ button:hover {
   color: white;
   font-weight: bold;
 }
-
+.contentWrapper {
+  max-width:1200px;
+  margin: 0 auto;
+  width: 100%;
+}

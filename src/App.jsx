@@ -616,9 +616,9 @@ const generateSalarySlip = (emp) => {
       ["Present Days", emp.presentDays],
       ["Approved Leaves", emp.approvedLeaveCount],
       ["Unpaid Days", emp.unpaidDays],
-      ["Per Day Salary", `₹${emp.dailySalary}`],
-      ["Deduction", `₹${emp.deductionAmount}`],
-      ["Final Salary", `₹${emp.finalSalary}`],
+    ["Per Day Salary", `Rs. ${emp.dailySalary}`],
+    ["Deduction", `Rs. ${emp.deductionAmount}`],
+["Final Salary", `Rs. ${emp.finalSalary}`],
     ],
   });
 

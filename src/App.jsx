@@ -874,11 +874,7 @@ const updateLeaveStatus = async (id, newStatus) => {
               />
             </div>
 
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: "15px"
-            }}>
+            <div className="dashboardGrid">
 
               <div className="statCard">
                 <h3>Total Revenue</h3>

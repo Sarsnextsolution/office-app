@@ -826,12 +826,7 @@ const updateLeaveStatus = async (id, newStatus) => {
 
         {userRole === "director" && activePage === "dashboard" && (
           <>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "20px",
-              marginBottom: "30px"
-            }}>
+            <div className="dashboardGrid">
 
               <div className="statCard">
                 <h3>Total Employees</h3>

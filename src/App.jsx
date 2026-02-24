@@ -824,12 +824,12 @@ const updateLeaveStatus = async (id, newStatus) => {
         </div>
 
         {userRole === "director" && activePage === "dashboard" && (
-  <>
+   <>
+  <div className="dashboardTop">
     
-    {/* 🔹 MONTH SELECTOR */}
-    <div className="card">
-      <h2>Monthly Summary</h2>
+    <div className="monthCard">
 
+      <h2>Monthly Summary</h2>
       <input
         type="month"
         value={selectedMonth}
@@ -837,9 +837,7 @@ const updateLeaveStatus = async (id, newStatus) => {
       />
     </div>
 
-    {/* 🔹 ALL STATS GRID */}
-    <div className="dashboardGrid">
-
+    <div className="statsGrid">
       <div className="statCard">
         <h3>Total Employees</h3>
         <h1>{employees.length}</h1>
@@ -860,7 +858,7 @@ const updateLeaveStatus = async (id, newStatus) => {
         <h1>₹{reports.reduce((sum, r) => sum + (r.revenue || 0), 0)}</h1>
       </div>
 
-      {/* 🔥 Monthly Data still works */}
+
       <div className="statCard">
         <h3>Monthly Revenue</h3>
         <h1>₹{monthlyData.totalRevenue}</h1>
@@ -875,11 +873,19 @@ const updateLeaveStatus = async (id, newStatus) => {
         <h3>Avg Calls / Day</h3>
         <h1>{monthlyData.avgCalls}</h1>
       </div>
-
     </div>
+  </div>
 
-  </>
-)}
+  {monthlyReports.length > 0 && (
+    <div className="card">
+      <h2>Revenue Chart</h2>
+      <div style={{ height: "400px" }}>
+        <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
+      </div>
+    </div>
+  )}
+    </>
+  )}
 
         {userRole === "employee" && (
           <div className="card">

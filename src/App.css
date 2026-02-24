@@ -236,3 +236,22 @@ button:hover {
   flex-direction: column;
   justify-content: center;
 }
+.dashboardTop {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.monthCard {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  max-width: 300px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+}

@@ -51,7 +51,14 @@ body {
 .mainContent {
   flex: 1;
   padding: 40px;
-background: #f4f6f9;
+  background: #f4f6f9;
+
+  display: flex;
+  justify-content: center;   /* center content */
+}
+.contentWrapper {
+  width: 100%;
+  max-width: 1200px;   /* 🔥 THIS CONTROLS WIDTH */
 }
 
 /* ===== HEADER ===== */

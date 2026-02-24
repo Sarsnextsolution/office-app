@@ -807,7 +807,7 @@ const updateLeaveStatus = async (id, newStatus) => {
       )}
 
       <div className="mainContent">
-      
+      <div className="contentWrapper">
 
 
         <div className="header">
@@ -821,7 +821,7 @@ const updateLeaveStatus = async (id, newStatus) => {
 
           <button onClick={handleLogout}>Logout</button>
         </div>
-    
+        </div>
 
         {userRole === "director" && activePage === "dashboard" && (
   <>

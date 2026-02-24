@@ -807,7 +807,7 @@ const updateLeaveStatus = async (id, newStatus) => {
       )}
 
       <div className="mainContent">
-        <div className="contentWrapper">
+      
 
 
         <div className="header">
@@ -821,12 +821,12 @@ const updateLeaveStatus = async (id, newStatus) => {
 
           <button onClick={handleLogout}>Logout</button>
         </div>
-        </div>
+
         {userRole === "director" && activePage === "dashboard" && (
           <>
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
               gap: "20px",
               marginBottom: "30px"
             }}>

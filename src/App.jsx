@@ -843,7 +843,9 @@ const updateLeaveStatus = async (id, newStatus) => {
           </h1>
 
           <p>Welcome: {session.user.email}</p>
-
+<button onClick={() => setShowPasswordModal(true)}>
+  Change Password 
+  </button>
           <button onClick={handleLogout}>Logout</button>
         </div>
         {showPasswordModal && (

@@ -291,3 +291,15 @@ button:hover {
   width: 350px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}

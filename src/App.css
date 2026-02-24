@@ -1,292 +1,117 @@
-/* ===== GLOBAL ===== */
+/* ============================= */
+/* ===== GLOBAL RESET ========= */
+/* ============================= */
+
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #f4f6f9;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #f3f4f6;
+  color: #111827;
 }
 
-/* ===== LAYOUT ===== */
+/* ============================= */
+/* ===== APP LAYOUT =========== */
+/* ============================= */
 
 .appLayout {
   display: flex;
   min-height: 100vh;
 }
 
-/* ===== SIDEBAR ===== */
+/* ============================= */
+/* ===== SIDEBAR ============== */
+/* ============================= */
 
 .sidebar {
-  width: 240px;
-  background: linear-gradient(180deg, #1e293b, #0f172a);
+  width: 260px;
+  background: linear-gradient(180deg, #0f172a, #1e293b);
   color: white;
   padding: 30px 20px;
-  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .logoText {
   font-size: 22px;
-  font-weight: bold;
+  font-weight: 600;
   margin-bottom: 40px;
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .sidebar li {
-  padding: 12px 15px;
+  padding: 14px 16px;
   margin-bottom: 12px;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: 0.2s ease;
+  font-weight: 500;
 }
 
 .sidebar li:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-/* ===== MAIN CONTENT ===== */
-
-.mainContent {
-  flex: 1;
-  padding: 40px;
-  background: #f4f6f9;
-
-  display: flex;
-  justify-content: center;   /* center content */
-}
-.contentWrapper {
-  width: 100%;
-  max-width: 1200px;   /* 🔥 THIS CONTROLS WIDTH */
-}
-
-/* ===== HEADER ===== */
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-/* ===== CARDS ===== */
-
-.card {
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
-  margin-bottom: 30px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-}
-
-.statCard {
-  background: linear-gradient(135deg, #4e73df, #224abe);
-  color: white;
-  padding: 25px;
-  border-radius: 16px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-  transition: 0.3s ease;
-}
-
-.statCard:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 45px rgba(0,0,0,0.25);
-}
-
-.statCard h3 {
-  margin: 0;
-  font-size: 16px;
-  opacity: 0.9;
-}
-
-.statCard h1 {
-  margin-top: 10px;
-  font-size: 30px;
-}
-
-/* ===== TABLE ===== */
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table th {
-  background: #f1f5f9;
-  padding: 12px;
-  text-align: left;
-}
-
-table td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-}
-
-/* ===== FORM ===== */
-
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-}
-
-/* ===== BUTTON ===== */
-
-button {
-  background: #4e73df;
-  color: white;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #2e59d9;
-}
-.loginContainer {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
-}
-
-.loginCard {
-  background: white;
-  padding: 40px;
-  width: 350px;
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-  text-align: center;
-}
-
-.loginCard h1 {
-  margin-bottom: 5px;
-  color: #4f46e5;
-}
-
-.loginCard p {
-  margin-bottom: 25px;
-  color: gray;
-}
-
-.loginCard input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
-
-.loginCard button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: #4f46e5;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.loginCard button:hover {
-  background: #4338ca;
-}
-.sidebar ul li {
-  padding: 12px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: 0.3s;
-}
-
-.sidebar ul li:hover {
-  background: #eef2ff;
+  background: rgba(255,255,255,0.08);
 }
 
 .activeMenu {
   background: #4f46e5;
   color: white;
-  font-weight: bold;
 }
 
+/* ============================= */
+/* ===== MAIN CONTENT ========= */
+/* ============================= */
 
-
-.dashboardGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 25px;
-  margin-bottom: 40px;
+.mainContent {
+  flex: 1;
+  padding: 40px 60px;
+  background: #f3f4f6;
 }
 
-.statCard {
-  background: linear-gradient(135deg, #4e73df, #224abe);
-  color: white;
-  padding: 25px;
-  border-radius: 16px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-  transition: 0.3s ease;
-
-  min-height: 120px;   /* 🔥 this fixes uneven size */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.dashboardTop {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+.contentWrapper {
+  max-width: 1300px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-.monthCard {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-  max-width: 300px;
-}
+/* ============================= */
+/* ===== HEADER =============== */
+/* ============================= */
 
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 25px;
-}
-.dashboardLayout {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 30px;
-  align-items: start;
-}
-
-.dashboardLeft {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-}
-
-.monthRow {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* ============================= */
+/* ===== CARD SYSTEM ========== */
+/* ============================= */
+
+.card {
   background: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.dashboardRight {
-  height: fit-content;
-}   
+/* ============================= */
+/* ===== DASHBOARD GRID ======= */
+/* ============================= */
 
 .dashboardContainer {
   display: flex;
@@ -302,28 +127,140 @@ button:hover {
 
 .statsRow {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 25px;
 }
 
-.chartCard {
-  width: 100%;
+/* ============================= */
+/* ===== STAT CARDS =========== */
+/* ============================= */
+
+.statCard {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  color: white;
+  padding: 30px;
+  border-radius: 20px;
+  min-height: 130px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  transition: 0.25s ease;
+  box-shadow: 0 12px 25px rgba(79,70,229,0.25);
 }
-/* 🔥 FIX FULL PAGE STRETCH ISSUE */
 
-.mainContent {
-  flex: 1;
-  padding: 40px;
-  background: #f4f6f9;
-
-  max-width: 1200px;   /* ✅ important */
-  margin: 0 auto;      /* ✅ center content */
+.statCard:hover {
+  transform: translateY(-4px);
 }
 
-.card {
-  width: 100%;
+.statCard h3 {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.85;
+  font-weight: 500;
 }
 
-.dashboardContainer {
+.statCard h1 {
+  margin-top: 12px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* ============================= */
+/* ===== TABLE DESIGN ========= */
+/* ============================= */
+
+table {
   width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table th {
+  background: #f9fafb;
+  padding: 14px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+table td {
+  padding: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+}
+
+/* ============================= */
+/* ===== FORMS ================ */
+/* ============================= */
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 15px;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+/* ============================= */
+/* ===== BUTTON SYSTEM ======== */
+/* ============================= */
+
+button {
+  background: #4f46e5;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background: #4338ca;
+}
+
+/* ============================= */
+/* ===== LOGIN PAGE =========== */
+/* ============================= */
+
+.loginContainer {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+}
+
+.loginCard {
+  background: white;
+  padding: 50px;
+  width: 380px;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.loginCard h1 {
+  margin-bottom: 10px;
+  font-size: 22px;
+}
+
+.loginCard p {
+  margin-bottom: 30px;
+  color: #6b7280;
 }

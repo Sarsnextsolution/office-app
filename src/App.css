@@ -207,18 +207,7 @@ button:hover {
   font-weight: bold;
 }
 
-.mainContent {
-  flex: 1;
-  padding: 40px;
-  background: #f4f6f9;
-display: flex;
-justify-content: center;
-}
 
-.contentContainer {
-  width: 100%;
-  max-width: 1200px;
-}
 
 .dashboardGrid {
   display: grid;

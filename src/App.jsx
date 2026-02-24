@@ -707,8 +707,8 @@ const updateLeaveStatus = async (id, newStatus) => {
   return (
     <div className="loginContainer">
       <div className="loginCard">
-        <h1>SARS Next Solutions</h1>
-        <p>Office Management System</p>
+       <img src="/logo.png" alt="SARS Next Solution" style={{ width: "200px", marginBottom: "20px" }} />
+<p style={{ color: "#6b7280" }}>Office Management System</p>
 
         <input
           placeholder="Email Address"
@@ -757,7 +757,9 @@ const updateLeaveStatus = async (id, newStatus) => {
 
       {userRole === "director" && (
         <div className="sidebar">
-          <h2 className="logoText">SARS Admin</h2>
+         <div className="logoWrapper">
+  <img src="/logo.png" alt="SARS Next Solution" />
+</div>
           <ul>
           <li 
   className={activePage === "dashboard" ? "activeMenu" : ""}

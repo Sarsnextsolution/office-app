@@ -264,3 +264,10 @@ button:hover {
   margin-bottom: 30px;
   color: #6b7280;
 }
+.logoWrapper {
+  margin-bottom: 40px;
+}
+
+.logoWrapper img {
+  width: 180px;
+}

@@ -1123,24 +1123,7 @@ const updateLeaveStatus = async (id, newStatus) => {
   </div>
 )}
 
-        {userRole === "director" && activePage === "dashboard" && monthlyReports.length > 0 && (
-          <div className="card" style={{ width: "100%" }}>
-            <h2>📈 Revenue Chart</h2>
 
-            <div style={{ height: "400px" }}>
-              <Line
-                data={chartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: { display: true }
-                  }
-                }}
-              />
-            </div>
-          </div>
-        )}
 
 
 

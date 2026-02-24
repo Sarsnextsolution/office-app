@@ -602,7 +602,7 @@ const generateSalarySlip = (emp) => {
   doc.text("Salary Slip", 80, 15);
 
   doc.setFontSize(12);
-  doc.text(`Company: SARS Next Solutions`, 14, 30);
+  doc.text(`Company: SARS NEXT SOLUTION`, 14, 30);
   doc.text(`Month: ${selectedMonth}`, 14, 37);
   doc.text(`Employee Name: ${emp.name}`, 14, 44);
 
@@ -807,6 +807,7 @@ const updateLeaveStatus = async (id, newStatus) => {
       )}
 
       <div className="mainContent">
+        <div className="contentContainer">
       
 
 
@@ -820,6 +821,7 @@ const updateLeaveStatus = async (id, newStatus) => {
           <p>Welcome: {session.user.email}</p>
 
           <button onClick={handleLogout}>Logout</button>
+        </div>
         </div>
 
         {userRole === "director" && activePage === "dashboard" && (

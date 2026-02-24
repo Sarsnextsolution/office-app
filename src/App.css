@@ -211,6 +211,12 @@ button:hover {
   flex: 1;
   padding: 40px;
   background: #f4f6f9;
-  max-width: 1400px;
+display: flex;
+justify-content: center;
+}
+
+.contentContainer {
+  width: 100%;
+  max-width: 1200px;
 }
 

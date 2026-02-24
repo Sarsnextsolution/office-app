@@ -824,68 +824,68 @@ const updateLeaveStatus = async (id, newStatus) => {
         </div>
 
         {userRole === "director" && activePage === "dashboard" && (
-   <>
-  <div className="dashboardTop">
-    
-    <div className="monthCard">
+  <div className="dashboardLayout">
 
-      <h2>Monthly Summary</h2>
-      <input
-        type="month"
-        value={selectedMonth}
-        onChange={(e) => setSelectedMonth(e.target.value)}
-      />
+    <div className="dashboardLeft">
+
+      <div className="monthRow">
+        <h2>Monthly Summary</h2>
+        <input
+          type="month"
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+        />
+      </div>
+
+      <div className="statsGrid">
+        <div className="statCard">
+          <h3>Total Employees</h3>
+          <h1>{employees.length}</h1>
+        </div>
+
+        <div className="statCard">
+          <h3>Working Now</h3>
+          <h1>{reports.filter(r => r.login_time && !r.logout_time).length}</h1>
+        </div>
+
+        <div className="statCard">
+          <h3>Completed Today</h3>
+          <h1>{reports.filter(r => r.logout_time).length}</h1>
+        </div>
+
+        <div className="statCard">
+          <h3>Total Revenue Today</h3>
+          <h1>₹{reports.reduce((sum, r) => sum + (r.revenue || 0), 0)}</h1>
+        </div>
+
+        <div className="statCard">
+          <h3>Monthly Revenue</h3>
+          <h1>₹{monthlyData.totalRevenue}</h1>
+        </div>
+
+        <div className="statCard">
+          <h3>Working Days</h3>
+          <h1>{monthlyData.totalDays}</h1>
+        </div>
+
+        <div className="statCard">
+          <h3>Avg Calls / Day</h3>
+          <h1>{monthlyData.avgCalls}</h1>
+        </div>
+      </div>
     </div>
 
-    <div className="statsGrid">
-      <div className="statCard">
-        <h3>Total Employees</h3>
-        <h1>{employees.length}</h1>
+    {monthlyReports.length > 0 && (
+      <div className="dashboardRight card">
+        <h2>Revenue Chart</h2>
+        <div style={{ height: "400px" }}>
+          <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
+        </div>
       </div>
+    )}
 
-      <div className="statCard">
-        <h3>Working Now</h3>
-        <h1>{reports.filter(r => r.login_time && !r.logout_time).length}</h1>
-      </div>
-
-      <div className="statCard">
-        <h3>Completed Today</h3>
-        <h1>{reports.filter(r => r.logout_time).length}</h1>
-      </div>
-
-      <div className="statCard">
-        <h3>Total Revenue Today</h3>
-        <h1>₹{reports.reduce((sum, r) => sum + (r.revenue || 0), 0)}</h1>
-      </div>
-
-
-      <div className="statCard">
-        <h3>Monthly Revenue</h3>
-        <h1>₹{monthlyData.totalRevenue}</h1>
-      </div>
-
-      <div className="statCard">
-        <h3>Working Days</h3>
-        <h1>{monthlyData.totalDays}</h1>
-      </div>
-
-      <div className="statCard">
-        <h3>Avg Calls / Day</h3>
-        <h1>{monthlyData.avgCalls}</h1>
-      </div>
-    </div>
   </div>
-
-  {monthlyReports.length > 0 && (
-    <div className="card">
-      <h2>Revenue Chart</h2>
-      <div style={{ height: "400px" }}>
-        <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
-      </div>
-    </div>
-  )}
-    </>
-  )}
+)}
 
         {userRole === "employee" && (
           <div className="card">

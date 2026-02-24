@@ -309,3 +309,21 @@ button:hover {
 .chartCard {
   width: 100%;
 }
+/* 🔥 FIX FULL PAGE STRETCH ISSUE */
+
+.mainContent {
+  flex: 1;
+  padding: 40px;
+  background: #f4f6f9;
+
+  max-width: 1200px;   /* ✅ important */
+  margin: 0 auto;      /* ✅ center content */
+}
+
+.card {
+  width: 100%;
+}
+
+.dashboardContainer {
+  width: 100%;
+}

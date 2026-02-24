@@ -57,7 +57,8 @@ const [leaveType, setLeaveType] = useState("sick");
 const [leaveList, setLeaveList] = useState([]);
 const [allLeaves, setAllLeaves] = useState([]);
 const [salaryData, setSalaryData] = useState([]);
-
+const [showPasswordModal, setShowPasswordModal] = useState(false);
+const [newPassword, setNewPassword] = useState("");
 
 
   const [workNote, setWorkNote] = useState("");
@@ -189,7 +190,24 @@ const generateSalaryData = async () => {
     await supabase.auth.signOut();
     setSession(null);
   };
+const handlePasswordChange = async () => {
+  if (!newPassword) {
+    alert("Enter new password");
+    return;
+  }
 
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Password Updated Successfully");
+    setNewPassword("");
+    setShowPasswordModal(false);
+  }
+};
   // Add employee
   const addEmployee = async () => {
 
@@ -744,7 +762,12 @@ const updateLeaveStatus = async (id, newStatus) => {
       <div style={{ padding: 40 }}>
         <h2>Access Issue</h2>
         <p>Your role not found. Contact admin.</p>
-        <button onClick={handleLogout}>Logout</button>
+       <div style={{ display: "flex", gap: "10px" }}>
+  <button onClick={() => setShowPasswordModal(true)}>
+    Change Password
+  </button>
+  <button onClick={handleLogout}>Logout</button>
+</div>
       </div>
     );
   }
@@ -823,6 +846,29 @@ const updateLeaveStatus = async (id, newStatus) => {
 
           <button onClick={handleLogout}>Logout</button>
         </div>
+        {showPasswordModal && (
+  <div className="modalOverlay">
+    <div className="modalBox">
+      <h3>Change Password</h3>
+
+      <input
+        type="password"
+        placeholder="Enter New Password"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+      />
+
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+        <button onClick={() => setShowPasswordModal(false)}>
+          Cancel
+        </button>
+        <button onClick={handlePasswordChange}>
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+)}
         </div>
 
        {userRole === "director" && activePage === "dashboard" && (

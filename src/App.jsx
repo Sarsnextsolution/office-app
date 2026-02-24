@@ -825,75 +825,62 @@ const updateLeaveStatus = async (id, newStatus) => {
         </div>
 
         {userRole === "director" && activePage === "dashboard" && (
-          <>
-            <div className="dashboardGrid">
+  <>
+    
+    {/* 🔹 MONTH SELECTOR */}
+    <div className="card">
+      <h2>Monthly Summary</h2>
 
-              <div className="statCard">
-                <h3>Total Employees</h3>
-                <h1>{employees.length}</h1>
-              </div>
+      <input
+        type="month"
+        value={selectedMonth}
+        onChange={(e) => setSelectedMonth(e.target.value)}
+      />
+    </div>
 
-              <div className="statCard">
-                <h3>Working Now</h3>
-                <h1>
-                  {reports.filter(r => r.login_time && !r.logout_time).length}
-                </h1>
-              </div>
+    {/* 🔹 ALL STATS GRID */}
+    <div className="dashboardGrid">
 
-              <div className="statCard">
-                <h3>Completed Today</h3>
-                <h1>
-                  {reports.filter(r => r.logout_time).length}
-                </h1>
-              </div>
+      <div className="statCard">
+        <h3>Total Employees</h3>
+        <h1>{employees.length}</h1>
+      </div>
 
-              <div className="statCard">
-                <h3>Total Revenue Today</h3>
-                <h1>
-                  ₹{reports.reduce((sum, r) => sum + (r.revenue || 0), 0)}
-                </h1>
-              </div>
+      <div className="statCard">
+        <h3>Working Now</h3>
+        <h1>{reports.filter(r => r.login_time && !r.logout_time).length}</h1>
+      </div>
 
-            
-            </div>
-          </>
-        )}
-        {userRole === "director" && activePage === "dashboard" && (
-          <div className="card">
-            <h2>📊 Monthly Summary</h2>
+      <div className="statCard">
+        <h3>Completed Today</h3>
+        <h1>{reports.filter(r => r.logout_time).length}</h1>
+      </div>
 
-            <div style={{ marginBottom: "15px" }}>
-              <label style={{ marginRight: "10px", fontWeight: "bold" }}>
-                Select Month:
-              </label>
+      <div className="statCard">
+        <h3>Total Revenue Today</h3>
+        <h1>₹{reports.reduce((sum, r) => sum + (r.revenue || 0), 0)}</h1>
+      </div>
 
-              <input
-                type="month"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-              />
-            </div>
+      {/* 🔥 Monthly Data still works */}
+      <div className="statCard">
+        <h3>Monthly Revenue</h3>
+        <h1>₹{monthlyData.totalRevenue}</h1>
+      </div>
 
-            <div className="dashboardGrid">
+      <div className="statCard">
+        <h3>Working Days</h3>
+        <h1>{monthlyData.totalDays}</h1>
+      </div>
 
-              <div className="statCard">
-                <h3>Total Revenue</h3>
-                <h1>₹{monthlyData.totalRevenue}</h1>
-              </div>
+      <div className="statCard">
+        <h3>Avg Calls / Day</h3>
+        <h1>{monthlyData.avgCalls}</h1>
+      </div>
 
-              <div className="statCard">
-                <h3>Working Days</h3>
-                <h1>{monthlyData.totalDays}</h1>
-              </div>
+    </div>
 
-              <div className="statCard">
-                <h3>Avg Calls / Day</h3>
-                <h1>{monthlyData.avgCalls}</h1>
-              </div>
-
-            </div>
-          </div>
-        )}
+  </>
+)}
 
         {userRole === "employee" && (
           <div className="card">

@@ -33,6 +33,8 @@ const [activePage, setActivePage] = useState("dashboard");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [salary, setSalary] = useState("");
+  const [shiftStart, setShiftStart] = useState("");
+const [shiftEnd, setShiftEnd] = useState("");
   const [role, setRole] = useState("employee");
   const [calls, setCalls] = useState("");
   const [leads, setLeads] = useState("");
@@ -240,7 +242,9 @@ const handlePasswordChange = async () => {
         email: email,
         salary: salary,
         role: role,
-        auth_id: data.user.id
+        auth_id: data.user.id,
+        shift_start: shiftStart,
+        shift_end: shiftEnd
       }
     ]);
 
@@ -251,6 +255,8 @@ const handlePasswordChange = async () => {
       setName("");
       setEmail("");
       setSalary("");
+      setShiftStart("");
+setShiftEnd("");
       fetchEmployees();
     }
   };
@@ -509,7 +515,7 @@ const calculateFinalSalary = async (employee, month) => {
 
   const { data: attendanceData } = await supabase
     .from("attendance")
-    .select("work_date")
+    .select("work_date, login_time, logout_time")
     .eq("employee_id", employee.id)
     .gte("work_date", `${month}-01`)
     .lte("work_date", `${month}-${totalDaysInMonth}`);
@@ -531,6 +537,35 @@ const holidayDates = holidayData?.map(h => h.holidays) || [];
 let festivalCount = holidayDates.length;
 
   const attendanceDates = attendanceData?.map(a => a.work_date) || [];
+  let lateLoginCount = 0;
+let earlyLogoutCount = 0;
+
+for (let record of attendanceData || []) {
+
+  if (!record.login_time || !record.logout_time) continue;
+  if (!employee.shift_start || !employee.shift_end) continue;
+
+  const login = new Date(record.login_time);
+  const logout = new Date(record.logout_time);
+
+  const shiftStartTime = new Date(`${record.work_date}T${employee.shift_start}`);
+  const shiftEndTime = new Date(`${record.work_date}T${employee.shift_end}`);
+
+  if (login > shiftStartTime) {
+    lateLoginCount++;
+  }
+
+  if (logout < shiftEndTime) {
+    earlyLogoutCount++;
+  }
+}
+const halfDayFromLate = Math.floor(lateLoginCount / 3);
+const halfDayFromEarly = Math.floor(earlyLogoutCount / 3);
+
+const totalHalfDays = halfDayFromLate + halfDayFromEarly;
+
+const extraDeduction = totalHalfDays * (dailySalary / 2);
+
   const leaveDates = leaveData?.map(l => l.leave_date) || [];
 
   let unpaidDays = 0;
@@ -576,7 +611,8 @@ if (isHoliday) {
     }
   }
 
-  const deductionAmount = unpaidDays * dailySalary;
+  const deductionAmount =
+  unpaidDays * dailySalary + extraDeduction;
   const finalSalary = employee.salary - deductionAmount;
 
   return {
@@ -586,9 +622,11 @@ if (isHoliday) {
     presentDays,
     approvedLeaveCount,
     unpaidDays,
+    lateLoginCount,
+    earlyLogoutCount,
     dailySalary: Math.round(dailySalary),
     deductionAmount: Math.round(deductionAmount),
-    finalSalary: Math.round(finalSalary)
+    finalSalary: Math.round(employee.salary-deductionAmount)
   };
 };
 const exportToExcel = () => {
@@ -993,6 +1031,19 @@ const updateLeaveStatus = async (id, newStatus) => {
               value={salary}
               onChange={(e) => setSalary(e.target.value)}
             />
+            <input
+  type="time"
+  value={shiftStart}
+  onChange={(e) => setShiftStart(e.target.value)}
+  placeholder="Shift Start"
+/>
+
+<input
+  type="time"
+  value={shiftEnd}
+  onChange={(e) => setShiftEnd(e.target.value)}
+  placeholder="Shift End"
+/>
             <select value={role} onChange={(e) => setRole(e.target.value)}>
               <option value="employee">Employee</option>
               <option value="manager">Manager</option>
@@ -1279,6 +1330,8 @@ const updateLeaveStatus = async (id, newStatus) => {
           <th>Unpaid Days</th>
           <th>Per Day Salary</th>
           <th>Deduction</th>
+          <th>Late Logins</th>
+<th>Early Logouts</th>
           <th>Final Salary</th>
           <th>Salary Slip</th>
         </tr>
@@ -1295,6 +1348,8 @@ const updateLeaveStatus = async (id, newStatus) => {
             <td>{emp.unpaidDays}</td>
             <td>₹{emp.dailySalary}</td>
             <td>₹{emp.deductionAmount}</td>
+            <td>{emp.lateLoginCount}</td>
+<td>{emp.earlyLogoutCount}</td>
             <td><strong>₹{emp.finalSalary}</strong></td>
             <td>
   <button onClick={() => generateSalarySlip(emp)}>

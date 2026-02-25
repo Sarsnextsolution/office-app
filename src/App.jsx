@@ -59,6 +59,7 @@ const [allLeaves, setAllLeaves] = useState([]);
 const [salaryData, setSalaryData] = useState([]);
 const [showPasswordModal, setShowPasswordModal] = useState(false);
 const [newPassword, setNewPassword] = useState("");
+const [successMessage, setSuccessMessage] = useState("");
 
 
   const [workNote, setWorkNote] = useState("");
@@ -190,6 +191,13 @@ const generateSalaryData = async () => {
     await supabase.auth.signOut();
     setSession(null);
   };
+  const showSuccess = (message) => {
+  setSuccessMessage(message);
+
+  setTimeout(() => {
+    setSuccessMessage("");
+  }, 2500);
+};
 const handlePasswordChange = async () => {
   if (!newPassword) {
     alert("Enter new password");
@@ -203,7 +211,7 @@ const handlePasswordChange = async () => {
   if (error) {
     alert(error.message);
   } else {
-    alert("Password Updated Successfully");
+    showSuccess("Password Updated Successfully");
     setNewPassword("");
     setShowPasswordModal(false);
   }
@@ -239,7 +247,7 @@ const handlePasswordChange = async () => {
     if (error) {
       alert(error.message);
     } else {
-      alert("Employee Added Successfully");
+      showSuccess("Employee Added Successfully");
       setName("");
       setEmail("");
       setSalary("");
@@ -283,7 +291,7 @@ const handlePasswordChange = async () => {
     if (error) {
       alert(error.message);
     } else {
-      alert("Report Submitted Successfully");
+      showSuccess("Report Submitted Successfully");
       setCalls("");
       setLeads("");
       setRevenue("");
@@ -413,7 +421,7 @@ const handlePasswordChange = async () => {
     if (error) {
       alert("Login failed: " + error.message);
     } else {
-      alert("Login marked successfully");
+      showSuccess("Login marked successfully");
       checkTodayAttendance();   // 👈 STEP 4 ANSWER (ikkade)
     }
   };
@@ -445,7 +453,7 @@ const handlePasswordChange = async () => {
     if (error) {
       alert("Logout failed: " + error.message);
     } else {
-      alert("Logout marked successfully");
+      showSuccess("Logout marked successfully");
       checkTodayAttendance();   // 👈 STEP 5 ANSWER (ikkade)
     }
   };
@@ -669,7 +677,7 @@ const applyLeave = async () => {
   if (error) {
     alert(error.message);
   } else {
-    alert("Leave Applied Successfully");
+    showSuccess("Leave Applied Successfully");
     setLeaveDate("");
     fetchLeaves();
   }
@@ -1299,7 +1307,14 @@ const updateLeaveStatus = async (id, newStatus) => {
     </table>
   </div>
 )}
-
+{successMessage && (
+  <div className="successPopup">
+    <div className="successBox">
+      <div className="checkmark">✓</div>
+      <p>{successMessage}</p>
+    </div>
+  </div>
+)}
 
       </div> {/* mainContent */}
     </div> 

@@ -68,6 +68,28 @@ const [successMessage, setSuccessMessage] = useState("");
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  // 🔒 Office Location Restriction
+const OFFICE_LAT = 17.368853;
+const OFFICE_LNG = 78.530211;
+const ALLOWED_RADIUS = 200; // meters
+
+const getDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371e3;
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) *
+      Math.cos(φ2) *
+      Math.sin(Δλ / 2) *
+      Math.sin(Δλ / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
 
   // Restore session
   useEffect(() => {
@@ -389,7 +411,20 @@ setShiftEnd("");
     if (!session) return;
 
     const today = new Date().toISOString().split("T")[0];
+    // 🔒 Location Check Before Login
+const position = await new Promise((resolve, reject) => {
+  navigator.geolocation.getCurrentPosition(resolve, reject);
+});
 
+const userLat = position.coords.latitude;
+const userLng = position.coords.longitude;
+
+const distance = getDistance(userLat, userLng, OFFICE_LAT, OFFICE_LNG);
+
+if (distance > ALLOWED_RADIUS) {
+  alert("❌ You are outside office location. Login not allowed.");
+  return;
+}
     // Get employee table ID using auth_id
     const { data: emp } = await supabase
       .from("employees")
@@ -436,7 +471,20 @@ setShiftEnd("");
     if (!session) return;
 
     const today = new Date().toISOString().split("T")[0];
+    // 🔒 Location Check Before Logout
+const position = await new Promise((resolve, reject) => {
+  navigator.geolocation.getCurrentPosition(resolve, reject);
+});
 
+const userLat = position.coords.latitude;
+const userLng = position.coords.longitude;
+
+const distance = getDistance(userLat, userLng, OFFICE_LAT, OFFICE_LNG);
+
+if (distance > ALLOWED_RADIUS) {
+  alert("❌ You are outside office location. Logout not allowed.");
+  return;
+}
     const { data: emp } = await supabase
       .from("employees")
       .select("id")

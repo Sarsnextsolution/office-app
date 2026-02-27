@@ -62,6 +62,7 @@ const [salaryData, setSalaryData] = useState([]);
 const [showPasswordModal, setShowPasswordModal] = useState(false);
 const [newPassword, setNewPassword] = useState("");
 const [successMessage, setSuccessMessage] = useState("");
+const [loggedUserName, setLoggedUserName] = useState("");
 
 
   const [workNote, setWorkNote] = useState("");
@@ -112,6 +113,7 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
   useEffect(() => {
     if (session) {
       fetchUserRole(session.user.id);
+      fetchLoggedUserName(session.user.id);
     }
   }, [session]);
   useEffect(() => {
@@ -182,6 +184,17 @@ useEffect(() => {
       setUserRole("unknown");
     }
   };
+  const fetchLoggedUserName = async (userId) => {
+  const { data, error } = await supabase
+    .from("employees")
+    .select("name")
+    .eq("auth_id", userId)
+    .single();
+
+  if (data) {
+    setLoggedUserName(data.name);
+  }
+};
 const generateSalaryData = async () => {
   if (!employees.length) return;
 
@@ -936,7 +949,11 @@ const updateLeaveStatus = async (id, newStatus) => {
               : "Employee Dashboard"}
           </h1>
 
-          <p>Welcome: {session.user.email}</p>
+         <p>
+  Welcome: {loggedUserName 
+    ? loggedUserName.charAt(0).toUpperCase() + loggedUserName.slice(1) 
+    : session.user.email}
+</p>
 <button onClick={() => setShowPasswordModal(true)}>
   Change Password 
   </button>

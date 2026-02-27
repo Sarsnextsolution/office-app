@@ -484,7 +484,7 @@ const distance = getDistance(userLat, userLng, OFFICE_LAT, OFFICE_LNG);
 if (distance > ALLOWED_RADIUS) {
   alert("❌ You are outside office location. Logout not allowed.");
   return;
-}
+}       
     const { data: emp } = await supabase
       .from("employees")
       .select("id")

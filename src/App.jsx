@@ -70,6 +70,7 @@ const [loggedUserName, setLoggedUserName] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [showForgot, setShowForgot] = useState(false);
 const [resetEmail, setResetEmail] = useState("");
+const [isResetMode, setIsResetMode] = useState(false);
   const [loginPassword, setLoginPassword] = useState("");
   // 🔒 Office Location Restriction
 const OFFICE_LAT = 17.368853;
@@ -94,6 +95,13 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
   return R * c;
 };
 
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("reset") === "true") {
+    setIsResetMode(true);
+  }
+}, []);
   // Restore session
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -238,13 +246,13 @@ const generateSalaryData = async () => {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-    redirectTo: window.location.origin
+    redirectTo: window.location.origin + "/?reset=true"
   });
 
   if (error) {
     alert(error.message);
   } else {
-    showSuccess("Password reset link sent to your email");
+showSuccess("Reset link sent successfully. Check your email.");
     setShowForgot(false);
     setResetEmail("");
   }
@@ -854,6 +862,26 @@ const updateLeaveStatus = async (id, newStatus) => {
   }
 };
 
+if (isResetMode) {
+  return (
+    <div className="loginContainer">
+      <div className="loginCard">
+        <h2>Set New Password</h2>
+
+        <input
+          type="password"
+          placeholder="Enter New Password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+        />
+
+        <button onClick={handlePasswordChange}>
+          Update Password
+        </button>
+      </div>
+    </div>
+  );
+}
   //---------Login Page----------//
   if (!session) {
   return (

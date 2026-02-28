@@ -920,7 +920,9 @@ if (isResetMode) {
   </div>
 )}
        <img src="/logo.png" alt="SARS Next Solution" style={{ width: "200px", marginBottom: "20px" }} />
-<p style={{ color: "#6b7280" }}>Office Management System</p>
+<p style={{ color: "#ffffff", opacity: 0.85 }}>
+  Office Management System
+</p>
 
         <input
           placeholder="Email Address"
@@ -934,14 +936,14 @@ if (isResetMode) {
           value={loginPassword}
           onChange={(e) => setLoginPassword(e.target.value)}
         />
-        <p 
-  style={{ 
-    cursor: "pointer", 
-    color: "#4f46e5", 
+      <p
+  style={{
+    cursor: "pointer",
+    color: "#ffffff",
     marginTop: "10px",
-    fontSize: "14px"
+    fontSize: "14px",
+    opacity: 0.9
   }}
-  onClick={() => setShowForgot(true)}
 >
   Forgot Password?
 </p>

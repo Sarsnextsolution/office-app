@@ -65,7 +65,8 @@ const [successMessage, setSuccessMessage] = useState("");
 const [loggedUserName, setLoggedUserName] = useState("");
 const [myAttendanceHistory, setMyAttendanceHistory] = useState([]);
 const [historyDate, setHistoryDate] = useState("");
-
+const [selectedEmployee, setSelectedEmployee] = useState(null);
+const [employeeAnalytics, setEmployeeAnalytics] = useState([]);
   const [workNote, setWorkNote] = useState("");
 
   const [loginEmail, setLoginEmail] = useState("");
@@ -192,6 +193,27 @@ const calculateTotalHours = () => {
 
   return `${hours}h ${minutes}m`;
 };
+const calculateLateStats = () => {
+  let lateCount = 0;
+  let earlyCount = 0;
+
+  myAttendanceHistory.forEach((att) => {
+    if (!att.login_time || !att.logout_time) return;
+
+    const login = new Date(att.login_time);
+    const logout = new Date(att.logout_time);
+
+    const workDate = att.work_date;
+
+    const shiftStart = new Date(`${workDate}T09:00:00`);
+    const shiftEnd = new Date(`${workDate}T18:00:00`);
+
+    if (login > shiftStart) lateCount++;
+    if (logout < shiftEnd) earlyCount++;
+  });
+
+  return { lateCount, earlyCount };
+};
   const fetchEmployees = async () => {
     if (!session) return;
 
@@ -206,7 +228,17 @@ const calculateTotalHours = () => {
 
     if (!error) setEmployees(data);
   };
+const fetchEmployeeAnalytics = async (empId) => {
+  const { data, error } = await supabase
+    .from("attendance")
+    .select("*")
+    .eq("employee_id", empId)
+    .order("work_date", { ascending: false });
 
+  if (!error) {
+    setEmployeeAnalytics(data || []);
+  }
+};
   const fetchUserRole = async (userId) => {
     const { data, error } = await supabase
       .from("employees")
@@ -1273,7 +1305,8 @@ if (isResetMode) {
   <p>
     Total Working Hours: {calculateTotalHours()}
   </p>
-
+<p>Late Logins: {calculateLateStats().lateCount}</p>
+<p>Early Logouts: {calculateLateStats().earlyCount}</p>
 </div>
     <table>
       <thead>
@@ -1457,6 +1490,7 @@ if (isResetMode) {
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
               />
+              
             </div>
 
             <table>
@@ -1582,6 +1616,7 @@ if (isResetMode) {
                 )}
 
                 <th>Role</th>
+                <th>Analytics</th>
 
               </tr>
             </thead>
@@ -1599,6 +1634,16 @@ if (isResetMode) {
                   )}
 
                   <td>{emp.role}</td>
+                  <td>
+  <button
+    onClick={() => {
+      setSelectedEmployee(emp);
+      fetchEmployeeAnalytics(emp.id);
+    }}
+  >
+    View
+  </button>
+</td>
 
                 </tr>
               ))}
@@ -1606,6 +1651,52 @@ if (isResetMode) {
           </table>
         </div>
         )}
+        {selectedEmployee && (
+  <div className="card">
+    <h2>{selectedEmployee.name} - Detailed Analytics</h2>
+
+    <p>Total Days: {employeeAnalytics.length}</p>
+
+    <p>
+      Completed Days: {
+        employeeAnalytics.filter(a => a.logout_time).length
+      }
+    </p>
+
+    <p>
+      Working Days: {
+        employeeAnalytics.filter(a => a.login_time && !a.logout_time).length
+      }
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Login</th>
+          <th>Logout</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {employeeAnalytics.map((att) => (
+          <tr key={att.id}>
+            <td>{att.work_date}</td>
+            <td>{formatTime(att.login_time)}</td>
+            <td>{formatTime(att.logout_time)}</td>
+            <td>
+              {!att.login_time
+                ? "🔴 Not Logged"
+                : !att.logout_time
+                ? "🟢 Working"
+                : "🔵 Completed"}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
 {activePage === "salary" && userRole === "director" && (
   <div className="card">
     <h2>Salary Breakdown</h2>

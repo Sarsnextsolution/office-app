@@ -270,7 +270,7 @@ const generateSalaryData = async () => {
 
   setTimeout(() => {
     setSuccessMessage("");
-  }, 2500);
+  }, 5000);
 };
 const handlePasswordChange = async () => {
   if (!newPassword) {
@@ -889,6 +889,19 @@ if (isResetMode) {
   return (
     <div className="loginContainer">
       <div className="loginCard">
+        {successMessage && (
+  <div style={{
+    background: "#dcfce7",
+    color: "#166534",
+    padding: "10px",
+    borderRadius: "6px",
+    marginBottom: "15px",
+    fontSize: "14px",
+    textAlign: "center"
+  }}>
+    {successMessage}
+  </div>
+)}
        <img src="/logo.png" alt="SARS Next Solution" style={{ width: "200px", marginBottom: "20px" }} />
 <p style={{ color: "#6b7280" }}>Office Management System</p>
 

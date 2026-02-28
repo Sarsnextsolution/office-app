@@ -278,6 +278,18 @@ const handlePasswordChange = async () => {
     return;
   }
 
+  const strongPassword =
+    newPassword.length >= 8 &&
+    /[0-9]/.test(newPassword) &&
+    /[!@#$%^&*]/.test(newPassword);
+
+  if (!strongPassword) {
+    alert(
+      "Password must be minimum 8 characters, include a number and a special symbol (!@#$%^&*)"
+    );
+    return;
+  }
+
   const { error } = await supabase.auth.updateUser({
     password: newPassword,
   });
@@ -285,9 +297,12 @@ const handlePasswordChange = async () => {
   if (error) {
     alert(error.message);
   } else {
-    showSuccess("Password Updated Successfully");
-    setNewPassword("");
-    setShowPasswordModal(false);
+    showSuccess("Password Updated Successfully. Redirecting to login...");
+
+    setTimeout(async () => {
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    }, 2000);
   }
 };
   // Add employee
@@ -876,7 +891,9 @@ if (isResetMode) {
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
         />
-
+        <small style={{ color: "#6b7280" }}>
+  Minimum 8 characters, include number & special symbol
+</small>
         <button onClick={handlePasswordChange}>
           Update Password
         </button>

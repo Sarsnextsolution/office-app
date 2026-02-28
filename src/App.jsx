@@ -68,6 +68,8 @@ const [loggedUserName, setLoggedUserName] = useState("");
   const [workNote, setWorkNote] = useState("");
 
   const [loginEmail, setLoginEmail] = useState("");
+  const [showForgot, setShowForgot] = useState(false);
+const [resetEmail, setResetEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   // 🔒 Office Location Restriction
 const OFFICE_LAT = 17.368853;
@@ -108,6 +110,13 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
       listener.subscription.unsubscribe();
     };
   }, []);
+  useEffect(() => {
+  const hash = window.location.hash;
+
+  if (hash && hash.includes("access_token")) {
+    setShowPasswordModal(true);
+  }
+}, []);
 
   // Fetch employees after login
   useEffect(() => {
@@ -222,6 +231,24 @@ const generateSalaryData = async () => {
 
     if (error) alert(error.message);
   };
+  const handleForgotPassword = async () => {
+  if (!resetEmail) {
+    alert("Enter your email");
+    return;
+  }
+
+  const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+    redirectTo: window.location.origin
+  });
+
+  if (error) {
+    alert(error.message);
+  } else {
+    showSuccess("Password reset link sent to your email");
+    setShowForgot(false);
+    setResetEmail("");
+  }
+};
 
   // Logout
   const handleLogout = async () => {
@@ -847,8 +874,41 @@ const updateLeaveStatus = async (id, newStatus) => {
           value={loginPassword}
           onChange={(e) => setLoginPassword(e.target.value)}
         />
-
+        <p 
+  style={{ 
+    cursor: "pointer", 
+    color: "#4f46e5", 
+    marginTop: "10px",
+    fontSize: "14px"
+  }}
+  onClick={() => setShowForgot(true)}
+>
+  Forgot Password?
+</p>
         <button onClick={handleLogin}>Login</button>
+        {showForgot && (
+  <div className="modalOverlay">
+    <div className="modalBox">
+      <h3>Reset Password</h3>
+
+      <input
+        type="email"
+        placeholder="Enter your registered email"
+        value={resetEmail}
+        onChange={(e) => setResetEmail(e.target.value)}
+      />
+
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+        <button onClick={() => setShowForgot(false)}>
+          Cancel
+        </button>
+        <button onClick={handleForgotPassword}>
+          Send Reset Link
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </div>
   );

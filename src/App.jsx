@@ -63,6 +63,7 @@ const [showPasswordModal, setShowPasswordModal] = useState(false);
 const [newPassword, setNewPassword] = useState("");
 const [successMessage, setSuccessMessage] = useState("");
 const [loggedUserName, setLoggedUserName] = useState("");
+const [myAttendanceHistory, setMyAttendanceHistory] = useState([]);
 
 
   const [workNote, setWorkNote] = useState("");
@@ -122,7 +123,11 @@ useEffect(() => {
 
 
 
-
+useEffect(() => {
+  if (session && userRole === "employee") {
+    fetchMyAttendanceHistory();
+  }
+}, [session, userRole]);
 
   // Fetch employees after login
   useEffect(() => {
@@ -852,6 +857,27 @@ const fetchLeaves = async () => {
 
   setLeaveList(data || []);
 };
+const fetchMyAttendanceHistory = async () => {
+  if (!session) return;
+
+  const { data: emp } = await supabase
+    .from("employees")
+    .select("id")
+    .eq("auth_id", session.user.id)
+    .single();
+
+  if (!emp) return;
+
+  const { data, error } = await supabase
+    .from("attendance")
+    .select("*")
+    .eq("employee_id", emp.id)
+    .order("work_date", { ascending: false });
+
+  if (!error) {
+    setMyAttendanceHistory(data || []);
+  }
+};
 const fetchAllLeaves = async () => {
   const { data, error } = await supabase
     .from("leave_requests")
@@ -1194,7 +1220,38 @@ if (isResetMode) {
             )}
           </div>
         )}
+            {userRole === "employee" && (
+  <div className="card">
+    <h2>My Attendance History</h2>
 
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Login Time</th>
+          <th>Logout Time</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {myAttendanceHistory.map((att) => (
+          <tr key={att.id}>
+            <td>{att.work_date}</td>
+            <td>{formatTime(att.login_time)}</td>
+            <td>{formatTime(att.logout_time)}</td>
+            <td>
+              {!att.login_time
+                ? "🔴 Not Logged"
+                : !att.logout_time
+                ? "🟢 Working"
+                : "🔵 Completed"}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
 
 
         {userRole === "director" && activePage === "employees" && (

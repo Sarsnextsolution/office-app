@@ -64,7 +64,7 @@ const [newPassword, setNewPassword] = useState("");
 const [successMessage, setSuccessMessage] = useState("");
 const [loggedUserName, setLoggedUserName] = useState("");
 const [myAttendanceHistory, setMyAttendanceHistory] = useState([]);
-
+const [historyDate, setHistoryDate] = useState("");
 
   const [workNote, setWorkNote] = useState("");
 
@@ -175,7 +175,23 @@ useEffect(() => {
 
 
 
+const calculateTotalHours = () => {
+  let totalMinutes = 0;
 
+  myAttendanceHistory.forEach((att) => {
+    if (att.login_time && att.logout_time) {
+      const login = new Date(att.login_time);
+      const logout = new Date(att.logout_time);
+
+      totalMinutes += (logout - login) / (1000 * 60);
+    }
+  });
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = Math.floor(totalMinutes % 60);
+
+  return `${hours}h ${minutes}m`;
+};
   const fetchEmployees = async () => {
     if (!session) return;
 
@@ -868,11 +884,17 @@ const fetchMyAttendanceHistory = async () => {
 
   if (!emp) return;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("attendance")
     .select("*")
     .eq("employee_id", emp.id)
     .order("work_date", { ascending: false });
+
+  if (historyDate) {
+    query = query.eq("work_date", historyDate);
+  }
+
+  const { data, error } = await query;
 
   if (!error) {
     setMyAttendanceHistory(data || []);
@@ -1223,7 +1245,36 @@ if (isResetMode) {
             {userRole === "employee" && (
   <div className="card">
     <h2>My Attendance History</h2>
+    <input
+  type="date"
+  value={historyDate}
+  onChange={(e) => setHistoryDate(e.target.value)}
+  style={{ marginBottom: "10px" }}
+/>
 
+<button onClick={fetchMyAttendanceHistory}>
+  Filter
+</button>
+    
+<div style={{ marginBottom: "15px" }}>
+  <p>Total Days: {myAttendanceHistory.length}</p>
+
+  <p>
+    Completed Days: {
+      myAttendanceHistory.filter(a => a.logout_time).length
+    }
+  </p>
+
+  <p>
+    Working Days: {
+      myAttendanceHistory.filter(a => a.login_time && !a.logout_time).length
+    }
+  </p>
+  <p>
+    Total Working Hours: {calculateTotalHours()}
+  </p>
+
+</div>
     <table>
       <thead>
         <tr>

@@ -71,6 +71,7 @@ const [loggedUserName, setLoggedUserName] = useState("");
   const [showForgot, setShowForgot] = useState(false);
 const [resetEmail, setResetEmail] = useState("");
 const [isResetMode, setIsResetMode] = useState(false);
+const [isSending, setIsSending] = useState(false);
   const [loginPassword, setLoginPassword] = useState("");
   // 🔒 Office Location Restriction
 const OFFICE_LAT = 17.368853;
@@ -118,13 +119,10 @@ useEffect(() => {
       listener.subscription.unsubscribe();
     };
   }, []);
-  useEffect(() => {
-  const hash = window.location.hash;
 
-  if (hash && hash.includes("access_token")) {
-    setShowPasswordModal(true);
-  }
-}, []);
+
+
+
 
   // Fetch employees after login
   useEffect(() => {
@@ -245,16 +243,20 @@ const generateSalaryData = async () => {
     return;
   }
 
+  setIsSending(true);
+
   const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
     redirectTo: window.location.origin + "/?reset=true"
   });
 
+  setIsSending(false);
+
   if (error) {
     alert(error.message);
   } else {
-showSuccess("Reset link sent successfully. Check your email.");
     setShowForgot(false);
     setResetEmail("");
+    showSuccess("Reset link sent successfully. Check your email.");
   }
 };
 
@@ -930,9 +932,9 @@ if (isResetMode) {
         <button onClick={() => setShowForgot(false)}>
           Cancel
         </button>
-        <button onClick={handleForgotPassword}>
-          Send Reset Link
-        </button>
+        <button onClick={handleForgotPassword} disabled={isSending}>
+  {isSending ? "Sending..." : "Send Reset Link"}
+</button>
       </div>
     </div>
   </div>

@@ -569,13 +569,24 @@ if (distance > ALLOWED_RADIUS) {
       return;
     }
 
-    const { error } = await supabase.from("attendance").insert([
-      {
-        employee_id: emp.id,
-        work_date: today,
-        login_time: new Date().toISOString(),
-      },
-    ]);
+    const { error } = await supabase
+  .from("attendance")
+  .insert([
+    {
+      employee_id: emp.id,
+      work_date: today,
+      login_time: new Date().toISOString(),
+    },
+  ]);
+
+if (error) {
+  if (error.code === "23505") {
+    alert("Already logged in today");
+  } else {
+    alert("Login failed: " + error.message);
+  }
+  return;
+}
 
     if (error) {
       alert("Login failed: " + error.message);
